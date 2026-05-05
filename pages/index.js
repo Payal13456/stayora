@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { 
   Search, 
   MapPin, 
@@ -250,13 +251,13 @@ export default function App() {
               List your PG, hostel, or flat on our platform to reach thousands of verified students looking for accommodation in your area.
             </p>
           </div>
-          <button 
-            onClick={() => navigate('add-property')}
-            className="w-full md:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition whitespace-nowrap shadow-sm flex items-center justify-center"
+          <Link
+            href="/list-property"
+            className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition whitespace-nowrap shadow-sm"
           >
-            <PlusCircle className="w-5 h-5 mr-2" />
+            <PlusCircle className="w-5 h-5" />
             List Your Property
-          </button>
+          </Link>
         </div>
       </section>
     </div>
@@ -751,12 +752,12 @@ export default function App() {
               
               <div className="w-px h-6 bg-gray-300"></div>
 
-              <button 
-                onClick={() => navigate('add-property')}
+              <Link
+                href="/list-property"
                 className="bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 px-4 py-2 rounded-lg text-sm font-bold transition flex items-center"
               >
                 <PlusCircle className="w-4 h-4 mr-2" /> List Property
-              </button>
+              </Link>
             </nav>
 
             {/* Mobile menu button */}
@@ -791,12 +792,12 @@ export default function App() {
                 </button>
               ))}
               <div className="pt-4 mt-2 border-t border-gray-100">
-                <button 
-                  onClick={() => navigate('add-property')}
+                <Link
+                  href="/list-property"
                   className="w-full bg-indigo-600 text-white px-4 py-3 rounded-lg text-base font-bold transition flex items-center justify-center"
                 >
                   <PlusCircle className="w-5 h-5 mr-2" /> List Property
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -844,7 +845,7 @@ export default function App() {
             <ul className="space-y-2 text-gray-400">
               <li><button onClick={() => navigate('properties')} className="hover:text-indigo-400 transition">Browse PGs</button></li>
               <li><button onClick={() => navigate('roommates')} className="hover:text-indigo-400 transition">Find Roommates</button></li>
-              <li><button onClick={() => navigate('add-property')} className="hover:text-indigo-400 transition">List Property</button></li>
+              <li><Link href="/list-property" className="hover:text-indigo-400 transition">List Property</Link></li>
               <li><a href="#" className="hover:text-indigo-400 transition">Contact Us</a></li>
             </ul>
           </div>
