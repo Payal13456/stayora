@@ -1,27 +1,95 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Home as HomeIcon, PlusCircle } from 'lucide-react';
 
+const INITIAL_FORM = {
+  title: '',
+  type: 'PG',
+  city: '',
+  address: '',
+  price: '',
+  genderPreference: 'Any',
+  description: '',
+  amenities: '',
+  images: '',
+  videos: '',
+  ownerName: '',
+  ownerPhone: ''
+};
+
 export default function ListPropertyPage() {
-  const [formData, setFormData] = useState({
-    title: '',
-    type: 'PG',
-    location: '',
-    price: '',
-    gender: 'Any',
-    amenities: '',
-    image: ''
-  });
-  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState(INITIAL_FORM);
+  const [cities, setCities] = useState([]);
+  const [cityLoading, setCityLoading] = useState(true);
+  const [submissionState, setSubmissionState] = useState('idle');
+
+  useEffect(() => {
+    const loadCities = async () => {
+      try {
+        const response = await fetch('/api/cities');
+        if (!response.ok) throw new Error(`Failed to load cities: ${response.status}`);
+
+        const result = await response.json();
+        if (result?.success && Array.isArray(result.data)) {
+          setCities(result.data);
+        }
+      } catch (error) {
+        console.error('Error loading cities:', error);
+      } finally {
+        setCityLoading(false);
+      }
+    };
+
+    loadCities();
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    setSubmitted(true);
+    setSubmissionState('loading');
+
+    const payload = {
+      title: formData.title,
+      type: formData.type,
+      city: formData.city || null,
+      address: formData.address,
+      price: parseInt(formData.price, 10),
+      genderPreference: formData.genderPreference,
+      description: formData.description,
+      amenities: formData.amenities
+        .split(',')
+        .map((amenity) => amenity.trim())
+        .filter(Boolean),
+      images: formData.images ? [formData.images] : [],
+      videos: formData.videos ? [formData.videos] : [],
+      ownerName: formData.ownerName,
+      ownerPhone: formData.ownerPhone
+    };
+
+    try {
+      const response = await fetch('/api/properties/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add property');
+      }
+
+      setSubmissionState('success');
+      setFormData(INITIAL_FORM);
+    } catch (error) {
+      console.error('Error submitting property:', error);
+      setSubmissionState('error');
+    }
   };
 
   return (
@@ -46,25 +114,22 @@ export default function ListPropertyPage() {
             </div>
           </div>
 
-          {submitted ? (
+          {submissionState === 'success' ? (
             <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-emerald-800">
               <h2 className="text-2xl font-semibold mb-2">Listing submitted!</h2>
-              <p className="mb-4">Your property has been prepared for publishing. A real implementation would save this to your database.</p>
-              <div className="grid gap-2 text-slate-700">
-                <div><strong>Title:</strong> {formData.title}</div>
-                <div><strong>Type:</strong> {formData.type}</div>
-                <div><strong>Location:</strong> {formData.location}</div>
-                <div><strong>Price:</strong> ₹{formData.price}</div>
-                <div><strong>Gender:</strong> {formData.gender}</div>
-                <div><strong>Amenities:</strong> {formData.amenities}</div>
-                <div><strong>Photo URL:</strong> {formData.image}</div>
-              </div>
+              <p className="mb-4">Your property has been successfully added to the platform.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
+              {submissionState === 'error' && (
+                <div className="rounded-3xl border border-rose-200 bg-rose-50 p-4 text-rose-800">
+                  There was an error submitting your property. Please try again.
+                </div>
+              )}
+
               <div className="grid gap-6 lg:grid-cols-2">
                 <label className="space-y-2 text-sm font-medium text-slate-700">
-                  Property title
+                  Property title *
                   <input
                     name="title"
                     value={formData.title}
@@ -76,36 +141,57 @@ export default function ListPropertyPage() {
                 </label>
 
                 <label className="space-y-2 text-sm font-medium text-slate-700">
-                  Property type
+                  Property type *
                   <select
                     name="type"
                     value={formData.type}
                     onChange={handleChange}
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
                   >
-                    <option>PG</option>
-                    <option>Flat</option>
-                    <option>Hostel</option>
-                    <option>Shared Room</option>
+                    <option value="PG">PG</option>
+                    <option value="HOSTEL">Hostel</option>
+                    <option value="FLAT">Flat</option>
                   </select>
                 </label>
               </div>
 
               <div className="grid gap-6 lg:grid-cols-2">
                 <label className="space-y-2 text-sm font-medium text-slate-700">
-                  Location
+                  City *
+                  <select
+                    required
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
+                  >
+                    <option value="" disabled>
+                      {cityLoading ? 'Loading cities...' : 'Select a city'}
+                    </option>
+                    {cities.map((city) => (
+                      <option key={city._id} value={city._id}>
+                        {city.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="space-y-2 text-sm font-medium text-slate-700">
+                  Address *
                   <input
-                    name="location"
-                    value={formData.location}
+                    name="address"
+                    value={formData.address}
                     onChange={handleChange}
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
                     placeholder="Vijay Nagar, Indore"
                     required
                   />
                 </label>
+              </div>
 
+              <div className="grid gap-6 lg:grid-cols-2">
                 <label className="space-y-2 text-sm font-medium text-slate-700">
-                  Monthly rent
+                  Monthly rent (₹) *
                   <input
                     name="price"
                     type="number"
@@ -116,37 +202,62 @@ export default function ListPropertyPage() {
                     required
                   />
                 </label>
-              </div>
 
-              <div className="grid gap-6 lg:grid-cols-2">
                 <label className="space-y-2 text-sm font-medium text-slate-700">
-                  Preferred gender
+                  Gender preference
                   <select
-                    name="gender"
-                    value={formData.gender}
+                    name="genderPreference"
+                    value={formData.genderPreference}
                     onChange={handleChange}
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
                   >
-                    <option>Any</option>
-                    <option>Male</option>
-                    <option>Female</option>
+                    <option value="Any">Any / Co-ed</option>
+                    <option value="Male">Male Only</option>
+                    <option value="Female">Female Only</option>
                   </select>
+                </label>
+              </div>
+
+              <label className="space-y-2 text-sm font-medium text-slate-700">
+                Description
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
+                  placeholder="Describe the property, rules, and highlights..."
+                />
+              </label>
+
+              <div className="grid gap-6 lg:grid-cols-2">
+                <label className="space-y-2 text-sm font-medium text-slate-700">
+                  Image URL
+                  <input
+                    name="images"
+                    type="url"
+                    value={formData.images}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="https://example.com/image.jpg"
+                  />
                 </label>
 
                 <label className="space-y-2 text-sm font-medium text-slate-700">
-                  Photo URL
+                  Video URL
                   <input
-                    name="image"
-                    value={formData.image}
+                    name="videos"
+                    type="url"
+                    value={formData.videos}
                     onChange={handleChange}
                     className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
-                    placeholder="https://images.unsplash.com/..."
+                    placeholder="https://youtube.com/..."
                   />
                 </label>
               </div>
 
               <label className="space-y-2 text-sm font-medium text-slate-700">
-                Amenities
+                Amenities (comma separated)
                 <input
                   name="amenities"
                   value={formData.amenities}
@@ -156,11 +267,39 @@ export default function ListPropertyPage() {
                 />
               </label>
 
+              <div className="grid gap-6 lg:grid-cols-2">
+                <label className="space-y-2 text-sm font-medium text-slate-700">
+                  Owner name *
+                  <input
+                    name="ownerName"
+                    value={formData.ownerName}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="Rahul Sharma"
+                    required
+                  />
+                </label>
+
+                <label className="space-y-2 text-sm font-medium text-slate-700">
+                  Owner phone *
+                  <input
+                    name="ownerPhone"
+                    type="tel"
+                    value={formData.ownerPhone}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="9876543210"
+                    required
+                  />
+                </label>
+              </div>
+
               <button
                 type="submit"
-                className="w-full rounded-2xl bg-indigo-600 px-5 py-3 text-white text-sm font-semibold hover:bg-indigo-700 transition"
+                disabled={submissionState === 'loading'}
+                className="w-full rounded-2xl bg-indigo-600 px-5 py-3 text-white text-sm font-semibold hover:bg-indigo-700 transition disabled:cursor-not-allowed disabled:bg-indigo-400"
               >
-                Publish Listing
+                {submissionState === 'loading' ? 'Publishing...' : 'Publish Listing'}
               </button>
             </form>
           )}

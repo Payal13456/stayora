@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Search, 
@@ -19,6 +19,62 @@ import {
   Clock,
   MessageCircle
 } from 'lucide-react';
+
+const getInitials = (name) => {
+  if (!name) return '';
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join('');
+};
+
+const AvatarFallback = ({ name, src }) => {
+  const [hasError, setHasError] = useState(!src);
+  const initials = getInitials(name);
+
+  if (hasError) {
+    return (
+      <div className="w-16 h-16 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-lg font-bold border-2 border-indigo-200">
+        {initials || '?'}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={name}
+      onError={() => setHasError(true)}
+      className="w-16 h-16 rounded-full object-cover border-2 border-indigo-100"
+    />
+  );
+};
+
+const PropertyImageFallback = ({ src, title }) => {
+  const [hasError, setHasError] = useState(!src);
+
+  if (hasError) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+        <div className="text-center">
+          <HomeIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+          <p className="text-sm text-gray-500">No image available</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={title}
+      onError={() => setHasError(true)}
+      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+    />
+  );
+};
 
 // --- MOCK DATA ---
 const INITIAL_PROPERTIES = [
@@ -115,6 +171,11 @@ export default function App() {
   const [properties, setProperties] = useState(INITIAL_PROPERTIES);
   const [roommates, setRoommates] = useState(INITIAL_ROOMMATES);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [topCities, setTopCities] = useState(TOP_CITIES);
+  const [cities, setCities] = useState([]);
+  const [cityLoading, setCityLoading] = useState(true);
+  const [roommateLoading, setRoommateLoading] = useState(true);
+  const [propertyLoading, setPropertyLoading] = useState(true);
   
   // Hoisted states to fix React Rules of Hooks violation
   const [propertyFilter, setPropertyFilter] = useState('All');
@@ -126,8 +187,105 @@ export default function App() {
   const [visitTime, setVisitTime] = useState('');
   const [visitScheduled, setVisitScheduled] = useState(false);
 
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const response = await fetch('/api/cities');
+        if (!response.ok) {
+          throw new Error(`City API returned ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result?.success && Array.isArray(result.data)) {
+          setCities(result.data.map((city) => ({
+            id: city._id,
+            name: city.name,
+            image: city.image || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=800'
+          })));
+          setTopCities(result.data.map((city) => ({
+            name: city.name,
+            image: city.image || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=800',
+            count: city.count || 'Popular'
+          })));
+        }
+      } catch (error) {
+        console.error('Failed to load cities:', error);
+      } finally {
+        setCityLoading(false);
+      }
+    };
+
+    fetchCities();
+  }, []);
+
+  useEffect(() => {
+    const fetchRoommates = async () => {
+      try {
+        const response = await fetch('/api/roommate');
+        if (!response.ok) {
+          throw new Error(`Roommate API returned ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result?.success && Array.isArray(result.data)) {
+          setRoommates(result.data.map((user) => ({
+            id: user._id,
+            name: user.name,
+            age: user.age,
+            role: `${user.occupationType || 'Student'}${user.occupation ? ` - ${user.occupation}` : ''}`,
+            budget: user.budget,
+            location: user.city || 'Any location',
+            preferences: Array.isArray(user.tags) ? user.tags : [],
+            avatar: user.profileImage || 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200',
+            bio: user.bio || '',
+            phone: user.phone || user.whatsapp || '',
+          })));
+        }
+      } catch (error) {
+        console.error('Failed to load roommates:', error);
+      } finally {
+        setRoommateLoading(false);
+      }
+    };
+
+    fetchRoommates();
+  }, []);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await fetch('/api/properties');
+        if (!response.ok) {
+          throw new Error(`Properties API returned ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result?.success && Array.isArray(result.data)) {
+          setProperties(result.data.map((prop) => ({
+            id: prop._id,
+            type: prop.type || 'PG',
+            title: prop.title,
+            location: prop.address || 'Unknown location',
+            price: prop.price,
+            gender: prop.genderPreference || 'Any',
+            amenities: Array.isArray(prop.amenities) ? prop.amenities : [],
+            image: Array.isArray(prop.images) && prop.images.length > 0 
+              ? prop.images[0] 
+              : 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800'
+          })));
+        }
+      } catch (error) {
+        console.error('Failed to load properties:', error);
+      } finally {
+        setPropertyLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
   const [formData, setFormData] = useState({
-    title: '', type: 'PG', location: '', price: '', gender: 'Any', amenities: '', image: ''
+    title: '', type: 'PG', address: '', price: '', genderPreference: 'Any', description: '', amenities: '', images: '', videos: '', ownerName: '', ownerPhone: ''
   });
   const [submitted, setSubmitted] = useState(false);
 
@@ -139,13 +297,28 @@ export default function App() {
   };
 
   const handleViewDetails = (property) => {
-    setSelectedProperty(property);
-    // Reset schedule states when viewing a new property
-    setVisitScheduled(false);
-    setVisitDate('');
-    setVisitTime('');
-    setShowScheduleModal(false);
-    navigate('property-details');
+    const id = typeof property === 'string' ? property : property.id || property._id;
+    // fetch property details from backend
+    (async () => {
+      try {
+        setPropertyLoading(true);
+        const res = await fetch(`https://stayora-backend.onrender.com/properties/${id}`);
+        if (!res.ok) throw new Error(`Property fetch failed ${res.status}`);
+        const json = await res.json();
+        const prop = json?.data || json;
+        setSelectedProperty(prop);
+      } catch (err) {
+        console.error('Failed to load property details:', err);
+      } finally {
+        setPropertyLoading(false);
+        // Reset schedule states when viewing a new property
+        setVisitScheduled(false);
+        setVisitDate('');
+        setVisitTime('');
+        setShowScheduleModal(false);
+        navigate('property-details');
+      }
+    })();
   };
 
   const handleScheduleConfirm = () => {
@@ -174,6 +347,7 @@ export default function App() {
             <MapPin className="w-6 h-6 text-gray-400 ml-4 hidden sm:block" />
             <input 
               type="text" 
+              list="city-options"
               placeholder="Enter city, locality or landmark..." 
               className="w-full px-4 py-3 text-gray-800 bg-transparent outline-none rounded-full"
             />
@@ -185,6 +359,11 @@ export default function App() {
               Search
             </button>
           </div>
+          <datalist id="city-options">
+            {topCities.map((city) => (
+              <option key={city.name} value={city.name} />
+            ))}
+          </datalist>
         </div>
       </section>
 
@@ -220,8 +399,11 @@ export default function App() {
             <p className="text-gray-500 mt-2">Find the best properties in popular student hubs.</p>
           </div>
         </div>
+        {cityLoading ? (
+          <p className="text-sm text-gray-500 mt-2">Loading cities...</p>
+        ) : null}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {TOP_CITIES.map((city, idx) => (
+          {topCities.map((city, idx) => (
             <div 
               key={idx}
               onClick={() => navigate('properties')}
@@ -235,7 +417,9 @@ export default function App() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
               <div className="absolute bottom-0 left-0 p-5 w-full">
                 <h3 className="text-xl font-bold text-white mb-1">{city.name}</h3>
-                <p className="text-sm text-gray-300 font-medium">{city.count} Properties</p>
+                <p className="text-sm text-gray-300 font-medium">
+                  {city.count ? `${city.count} Properties` : 'Popular destination'}
+                </p>
               </div>
             </div>
           ))}
@@ -278,7 +462,7 @@ export default function App() {
           
           {/* Filters */}
           <div className="flex bg-gray-100 p-1 rounded-xl w-max">
-            {['All', 'PG', 'Hostel', 'Flat'].map(f => (
+            {['All', 'PG', 'HOSTEL', 'FLAT'].map(f => (
               <button
                 key={f}
                 onClick={() => setPropertyFilter(f)}
@@ -293,14 +477,18 @@ export default function App() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProperties.map(property => (
+          {propertyLoading ? (
+            <div className="col-span-full rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+              Loading properties...
+            </div>
+          ) : filteredProperties.length === 0 ? (
+            <div className="col-span-full rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+              No properties found.
+            </div>
+          ) : filteredProperties.map(property => (
             <div key={property.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-lg transition flex flex-col group">
-              <div className="relative h-56 overflow-hidden">
-                <img 
-                  src={property.image} 
-                  alt={property.title} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+              <div className="relative h-56 overflow-hidden group">
+                <PropertyImageFallback src={property.image} title={property.title} />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-indigo-700 shadow-sm">
                   {property.type}
                 </div>
@@ -332,7 +520,7 @@ export default function App() {
                     <span className="text-gray-500 text-xs">/ month</span>
                   </div>
                   <button 
-                    onClick={() => handleViewDetails(property)}
+                    onClick={() => handleViewDetails(property.id)}
                     className="bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
                   >
                     View Details
@@ -341,11 +529,7 @@ export default function App() {
               </div>
             </div>
           ))}
-          {filteredProperties.length === 0 && (
-            <div className="col-span-full py-12 text-center">
-              <p className="text-gray-500">No properties found for this category.</p>
-            </div>
-          )}
+          
         </div>
       </div>
     );
@@ -421,7 +605,7 @@ export default function App() {
           {/* Hero Image */}
           <div className="h-64 md:h-96 w-full relative">
             <img 
-              src={selectedProperty.image} 
+              src={(selectedProperty.images && selectedProperty.images[0]) || selectedProperty.image || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800'} 
               alt={selectedProperty.title} 
               className="w-full h-full object-cover"
             />
@@ -435,9 +619,14 @@ export default function App() {
             <div className="lg:col-span-2 space-y-8">
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{selectedProperty.title}</h1>
-                <p className="text-lg text-gray-500 flex items-center">
-                  <MapPin className="w-5 h-5 mr-2 text-gray-400" /> {selectedProperty.location}
-                </p>
+                {(() => {
+                  const derivedLocation = selectedProperty.city?.name || selectedProperty.address || selectedProperty.location || 'Unknown location';
+                  return (
+                    <p className="text-lg text-gray-500 flex items-center">
+                      <MapPin className="w-5 h-5 mr-2 text-gray-400" /> {derivedLocation}
+                    </p>
+                  );
+                })()}
               </div>
 
               <div className="flex flex-wrap gap-4">
@@ -445,7 +634,7 @@ export default function App() {
                   <User className="w-5 h-5 text-indigo-600 mr-2" />
                   <div>
                     <p className="text-xs text-gray-500 font-medium">Preferred Gender</p>
-                    <p className="font-bold text-gray-900">{selectedProperty.gender}</p>
+                    <p className="font-bold text-gray-900">{selectedProperty.genderPreference || selectedProperty.gender || 'Any'}</p>
                   </div>
                 </div>
                 <div className="bg-indigo-50 px-4 py-3 rounded-xl flex items-center">
@@ -460,18 +649,22 @@ export default function App() {
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Amenities</h3>
                 <div className="flex flex-wrap gap-3">
-                  {selectedProperty.amenities.map((amenity, idx) => (
-                    <span key={idx} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium">
-                      {amenity}
-                    </span>
-                  ))}
+                  {(selectedProperty.amenities || []).map((amenity, idx) => (
+                      <span key={idx} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium">
+                        {amenity}
+                      </span>
+                    ))}
                 </div>
               </div>
 
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">About this property</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  This beautiful {selectedProperty.type.toLowerCase()} located in the heart of {selectedProperty.location.split(',')[0] || selectedProperty.location} offers a comfortable and secure living environment. Perfectly suited for students and young professionals, it comes equipped with essential amenities to make your stay hassle-free. The neighborhood is vibrant and offers easy access to local markets and transportation. Contact the owner for more details or to schedule a visit!
+                  {(() => {
+                    const derivedLocation = selectedProperty.city?.name || selectedProperty.address || selectedProperty.location || '';
+                    const typeLower = (selectedProperty.type || 'property').toLowerCase();
+                    return `This beautiful ${typeLower} located in the heart of ${derivedLocation} offers a comfortable and secure living environment. Perfectly suited for students and young professionals, it comes equipped with essential amenities to make your stay hassle-free. The neighborhood is vibrant and offers easy access to local markets and transportation. Contact the owner for more details or to schedule a visit!`;
+                  })()}
                 </p>
               </div>
             </div>
@@ -527,14 +720,18 @@ export default function App() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {roommates.map(person => (
+        {roommateLoading ? (
+          <div className="col-span-full rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+            Loading roommates...
+          </div>
+        ) : roommates.length === 0 ? (
+          <div className="col-span-full rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+            No roommates found at the moment.
+          </div>
+        ) : roommates.map(person => (
           <div key={person.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition">
             <div className="flex items-center space-x-4 mb-4">
-              <img 
-                src={person.avatar} 
-                alt={person.name} 
-                className="w-16 h-16 rounded-full object-cover border-2 border-indigo-100"
-              />
+              <AvatarFallback name={person.name} src={person.avatar} />
               <div>
                 <h3 className="text-lg font-bold text-gray-900">{person.name}, {person.age}</h3>
                 <p className="text-sm text-indigo-600 font-medium">{person.role}</p>
@@ -587,26 +784,76 @@ export default function App() {
   const renderAddProperty = () => {
     const handleChange = (e) => setFormData({...formData, [e.target.name]: e.target.value});
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
-      const newProperty = {
-        id: Date.now(),
-        ...formData,
-        price: parseInt(formData.price),
-        amenities: formData.amenities.split(',').map(a => a.trim()).filter(a => a),
-        image: formData.image || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800'
-      };
       
-      setProperties([newProperty, ...properties]);
-      setSubmitted(true);
-      setTimeout(() => {
-        navigate('properties');
-        setSubmitted(false);
-        setFormData({ title: '', type: 'PG', location: '', price: '', gender: 'Any', amenities: '', image: '' }); // Reset form
-      }, 2000);
+      try {
+        setSubmitted('loading');
+        
+        const payload = {
+          title: formData.title,
+          type: formData.type,
+          address: formData.address,
+          price: parseInt(formData.price),
+          genderPreference: formData.genderPreference,
+          description: formData.description,
+          amenities: formData.amenities.split(',').map(a => a.trim()).filter(a => a),
+          images: formData.images ? [formData.images] : [],
+          videos: formData.videos ? [formData.videos] : [],
+          ownerName: formData.ownerName,
+          ownerPhone: formData.ownerPhone,
+          city: formData.city || null
+        };
+
+        const response = await fetch('/api/properties/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to add property');
+        }
+
+        const result = await response.json();
+        setSubmitted('success');
+        
+        setTimeout(() => {
+          navigate('properties');
+          setSubmitted(false);
+          setFormData({ title: '', type: 'PG', city: '', address: '', price: '', genderPreference: 'Any', description: '', amenities: '', images: '', videos: '', ownerName: '', ownerPhone: '' });
+        }, 2000);
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        setSubmitted('error');
+        setTimeout(() => setSubmitted(false), 3000);
+      }
     };
 
-    if (submitted) {
+    if (submitted === 'loading') {
+      return (
+        <div className="max-w-2xl mx-auto px-4 py-24 text-center animate-in zoom-in duration-300">
+          <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-gray-600">Adding your property...</p>
+        </div>
+      );
+    }
+
+    if (submitted === 'error') {
+      return (
+        <div className="max-w-2xl mx-auto px-4 py-24 text-center animate-in zoom-in duration-300">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
+            <X className="w-10 h-10" />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Something went wrong</h2>
+          <p className="text-gray-500">Failed to add property. Please try again.</p>
+        </div>
+      );
+    }
+
+    if (submitted === 'success') {
       return (
         <div className="max-w-2xl mx-auto px-4 py-24 text-center animate-in zoom-in duration-300">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500">
@@ -619,7 +866,7 @@ export default function App() {
     }
 
     return (
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-in fade-in duration-500">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-in fade-in duration-500">
         <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6 md:p-10">
           <div className="mb-8 border-b border-gray-100 pb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">List Your Property</h1>
@@ -627,12 +874,13 @@ export default function App() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Basic Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-700">Property Title *</label>
                 <input 
                   required name="title" onChange={handleChange} value={formData.title}
-                  type="text" placeholder="e.g. Sunrise Boys PG" 
+                  type="text" placeholder="e.g. Sunshine Girls PG" 
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 focus:border-transparent outline-none transition"
                 />
               </div>
@@ -644,16 +892,31 @@ export default function App() {
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition"
                 >
                   <option value="PG">PG</option>
-                  <option value="Hostel">Hostel</option>
                   <option value="Flat">Flat</option>
                 </select>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Location/Address *</label>
+                <label className="text-sm font-semibold text-gray-700">City *</label>
+                <select
+                  required
+                  name="city"
+                  onChange={handleChange}
+                  value={formData.city}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition"
+                >
+                  <option value="" disabled>{cityLoading ? 'Loading cities...' : 'Select a city'}</option>
+                  {cities.map((city) => (
+                    <option key={city._id} value={city._id}>{city.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">Address *</label>
                 <input 
-                  required name="location" onChange={handleChange} value={formData.location}
-                  type="text" placeholder="City, Area (e.g. Kothrud, Pune)" 
+                  required name="address" onChange={handleChange} value={formData.address}
+                  type="text" placeholder="e.g. Vijay Nagar, Indore" 
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition"
                 />
               </div>
@@ -662,15 +925,15 @@ export default function App() {
                 <label className="text-sm font-semibold text-gray-700">Monthly Rent (₹) *</label>
                 <input 
                   required name="price" onChange={handleChange} value={formData.price}
-                  type="number" placeholder="5000" 
+                  type="number" placeholder="6500" 
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Preferred Gender</label>
+                <label className="text-sm font-semibold text-gray-700">Gender Preference</label>
                 <select 
-                  name="gender" onChange={handleChange} value={formData.gender}
+                  name="genderPreference" onChange={handleChange} value={formData.genderPreference}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition"
                 >
                   <option value="Any">Any / Co-ed</option>
@@ -678,24 +941,71 @@ export default function App() {
                   <option value="Female">Female Only</option>
                 </select>
               </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">Description</label>
+              <textarea 
+                name="description" onChange={handleChange} value={formData.description}
+                rows="3" placeholder="Describe your property, rules, and what makes it special..." 
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition resize-none"
+              ></textarea>
+            </div>
+
+            {/* Media */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">Image URL</label>
+                <input 
+                  name="images" onChange={handleChange} value={formData.images}
+                  type="url" placeholder="https://example.com/image.jpg" 
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition"
+                />
+              </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Image URL (Optional)</label>
+                <label className="text-sm font-semibold text-gray-700">Video URL (Optional)</label>
                 <input 
-                  name="image" onChange={handleChange} value={formData.image}
-                  type="url" placeholder="https://..." 
+                  name="videos" onChange={handleChange} value={formData.videos}
+                  type="url" placeholder="https://instagram.com/reels/..." 
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition"
                 />
               </div>
             </div>
 
+            {/* Amenities */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700">Amenities (Comma separated)</label>
               <textarea 
                 name="amenities" onChange={handleChange} value={formData.amenities}
-                rows="3" placeholder="WiFi, AC, Laundry, Meals Included..." 
+                rows="2" placeholder="WiFi, Food Included, AC, Laundry, Gym..." 
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition resize-none"
               ></textarea>
+            </div>
+
+            {/* Owner Details */}
+            <div className="border-t border-gray-100 pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Contact Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700">Your Name *</label>
+                  <input 
+                    required name="ownerName" onChange={handleChange} value={formData.ownerName}
+                    type="text" placeholder="Rahul Sharma" 
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700">Phone Number *</label>
+                  <input 
+                    required name="ownerPhone" onChange={handleChange} value={formData.ownerPhone}
+                    type="tel" placeholder="9876543210" 
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="pt-4">
