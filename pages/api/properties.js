@@ -1,6 +1,8 @@
+import { PROPERTIES_API_URL } from '../../lib/apiConfig';
+
 export default async function handler(req, res) {
   try {
-    const response = await fetch('https://stayora-backend.onrender.com/properties');
+    const response = await fetch(PROPERTIES_API_URL);
 
     if (!response.ok) {
       const message = `Backend properties request failed with status ${response.status}`;
