@@ -176,6 +176,8 @@ export default function App() {
   const [cityLoading, setCityLoading] = useState(true);
   const [roommateLoading, setRoommateLoading] = useState(true);
   const [propertyLoading, setPropertyLoading] = useState(true);
+  const [propertySearchCityId, setPropertySearchCityId] = useState('');
+  const [appliedPropertyCityId, setAppliedPropertyCityId] = useState('');
   
   // Hoisted states to fix React Rules of Hooks violation
   const [propertyFilter, setPropertyFilter] = useState('All');
@@ -254,7 +256,14 @@ export default function App() {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch('/api/properties');
+        setPropertyLoading(true);
+
+        const params = new URLSearchParams();
+        if (appliedPropertyCityId.trim()) {
+          params.set('city', appliedPropertyCityId.trim());
+        }
+
+        const response = await fetch(`/api/properties${params.toString() ? `?${params.toString()}` : ''}`);
         if (!response.ok) {
           throw new Error(`Properties API returned ${response.status}`);
         }
@@ -282,7 +291,7 @@ export default function App() {
     };
 
     fetchProperties();
-  }, []);
+  }, [appliedPropertyCityId]);
 
   const [formData, setFormData] = useState({
     title: '', type: 'PG', address: '', price: '', genderPreference: 'Any', description: '', amenities: '', images: '', videos: '', ownerName: '', ownerPhone: ''
@@ -290,35 +299,51 @@ export default function App() {
   const [submitted, setSubmitted] = useState(false);
 
   // --- NAVIGATION ---
-  const navigate = (tab) => {
+  const navigate = (tab, options = {}) => {
+    const { clearFilters = true } = options;
     setActiveTab(tab);
     setMobileMenuOpen(false);
+    if (clearFilters) {
+      setPropertySearchCityId('');
+      setAppliedPropertyCityId('');
+      setPropertyFilter('All');
+    }
     window.scrollTo(0, 0);
   };
 
+  const handlePropertySearch = () => {
+    setAppliedPropertyCityId(propertySearchCityId.trim());
+    setPropertySearchCityId('');
+    navigate('properties', { clearFilters: false });
+  };
+
+  const handleCityCardClick = (cityName) => {
+    const selectedCity = cities.find((item) => item.name === cityName);
+    setAppliedPropertyCityId(selectedCity?.id || '');
+    setPropertySearchCityId('');
+    navigate('properties', { clearFilters: false });
+  };
+
+  const handlePropertyCategoryClick = (filter) => {
+    setPropertySearchCityId('');
+    setAppliedPropertyCityId('');
+    setPropertyFilter(filter);
+    navigate('properties', { clearFilters: false });
+  };
+
   const handleViewDetails = (property) => {
-    const id = typeof property === 'string' ? property : property.id || property._id;
-    // fetch property details from backend
-    (async () => {
-      try {
-        setPropertyLoading(true);
-        const res = await fetch(`https://stayora-backend.onrender.com/properties/${id}`);
-        if (!res.ok) throw new Error(`Property fetch failed ${res.status}`);
-        const json = await res.json();
-        const prop = json?.data || json;
-        setSelectedProperty(prop);
-      } catch (err) {
-        console.error('Failed to load property details:', err);
-      } finally {
-        setPropertyLoading(false);
-        // Reset schedule states when viewing a new property
-        setVisitScheduled(false);
-        setVisitDate('');
-        setVisitTime('');
-        setShowScheduleModal(false);
-        navigate('property-details');
-      }
-    })();
+    const resolvedProperty = typeof property === 'object'
+      ? property
+      : properties.find((item) => String(item.id) === String(property) || String(item._id) === String(property)) || null;
+
+    setSelectedProperty(resolvedProperty);
+    setPropertyLoading(false);
+    // Reset schedule states when viewing a new property
+    setVisitScheduled(false);
+    setVisitDate('');
+    setVisitTime('');
+    setShowScheduleModal(false);
+    navigate('property-details');
   };
 
   const handleScheduleConfirm = () => {
@@ -329,11 +354,41 @@ export default function App() {
   };
 
   // --- VIEWS ---
-  const renderHome = () => (
+  const renderHome = () => {
+    const recentProperties = properties.slice(0, 3);
+    const recentRoommates = roommates.slice(0, 3);
+    const heroImages = [
+      'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&q=80&w=1200',
+      'https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&q=80&w=1200',
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200',
+    ];
+
+    return (
     <div className="space-y-16 pb-16">
       {/* Hero Section */}
-      <section className="relative bg-indigo-600 text-white rounded-b-3xl overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
+      <section className="relative overflow-hidden rounded-b-3xl text-white">
+        <div className="absolute inset-0">
+          {heroImages.length > 0 ? (
+            <div className="grid h-full w-full gap-3 bg-indigo-900 p-3 md:grid-cols-3">
+              {heroImages.map((src, index) => (
+                <div
+                  key={`${src}-${index}`}
+                  className={`relative overflow-hidden rounded-3xl ${index === 0 ? 'md:col-span-2 md:row-span-2' : 'md:row-span-1'}`}
+                >
+                  <img
+                    src={src}
+                    alt={`Property banner ${index + 1}`}
+                    className="h-full w-full object-cover opacity-80 transition-transform duration-700 hover:scale-105"
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-indigo-700 via-indigo-600 to-slate-900" />
+          )}
+          <div className="absolute inset-0 bg-slate-950/55" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/30 to-black/20" />
+        </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 flex flex-col items-center text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
             Find Your Perfect Student Home
@@ -345,25 +400,27 @@ export default function App() {
           
           <div className="w-full max-w-3xl bg-white p-2 rounded-full shadow-lg flex items-center">
             <MapPin className="w-6 h-6 text-gray-400 ml-4 hidden sm:block" />
-            <input 
-              type="text" 
-              list="city-options"
-              placeholder="Enter city, locality or landmark..." 
+            <select
+              value={propertySearchCityId}
+              onChange={(e) => setPropertySearchCityId(e.target.value)}
               className="w-full px-4 py-3 text-gray-800 bg-transparent outline-none rounded-full"
-            />
+              disabled={cityLoading}
+            >
+              <option value="">{cityLoading ? 'Loading cities...' : 'Select a city'}</option>
+              {cities.map((city) => (
+                <option key={city.id} value={city.id}>
+                  {city.name}
+                </option>
+              ))}
+            </select>
             <button 
-              onClick={() => navigate('properties')}
+              onClick={handlePropertySearch}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full font-medium transition flex items-center"
             >
               <Search className="w-5 h-5 mr-2" />
               Search
             </button>
           </div>
-          <datalist id="city-options">
-            {topCities.map((city) => (
-              <option key={city.name} value={city.name} />
-            ))}
-          </datalist>
         </div>
       </section>
 
@@ -372,9 +429,9 @@ export default function App() {
         <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What are you looking for?</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
           {[
-            { title: 'PGs', icon: Building, color: 'bg-blue-100 text-blue-600', action: () => navigate('properties') },
-            { title: 'Hostels', icon: Bed, color: 'bg-green-100 text-green-600', action: () => navigate('properties') },
-            { title: 'Flats', icon: HomeIcon, color: 'bg-purple-100 text-purple-600', action: () => navigate('properties') },
+            { title: 'PGs', icon: Building, color: 'bg-blue-100 text-blue-600', action: () => handlePropertyCategoryClick('PG') },
+            { title: 'Hostels', icon: Bed, color: 'bg-green-100 text-green-600', action: () => handlePropertyCategoryClick('HOSTEL') },
+            { title: 'Flats', icon: HomeIcon, color: 'bg-purple-100 text-purple-600', action: () => handlePropertyCategoryClick('FLAT') },
             { title: 'Roommates', icon: Users, color: 'bg-orange-100 text-orange-600', action: () => navigate('roommates') },
           ].map((cat, idx) => (
             <div 
@@ -406,7 +463,7 @@ export default function App() {
           {topCities.map((city, idx) => (
             <div 
               key={idx}
-              onClick={() => navigate('properties')}
+              onClick={() => handleCityCardClick(city.name)}
               className="relative h-64 rounded-2xl overflow-hidden cursor-pointer group shadow-sm"
             >
               <img 
@@ -424,6 +481,81 @@ export default function App() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Recent Listings */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900">Recent Property Listings</h2>
+            <p className="text-gray-500 mt-2">Fresh accommodations added to Homivo.</p>
+          </div>
+          <button onClick={() => navigate('properties')} className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition">
+            View all properties
+          </button>
+        </div>
+
+        {propertyLoading ? (
+          <div className="rounded-3xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">Loading recent properties...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {recentProperties.map((property) => (
+              <div key={property.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-lg transition group">
+                <div className="relative h-48 overflow-hidden">
+                  <PropertyImageFallback src={property.image} title={property.title} />
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-indigo-700 shadow-sm">
+                    {property.type}
+                  </div>
+                </div>
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{property.title}</h3>
+                  <p className="mt-2 text-sm text-gray-500 flex items-center">
+                    <MapPin className="w-4 h-4 mr-1 text-gray-400" /> {property.location}
+                  </p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-lg font-bold text-gray-900 flex items-center"><IndianRupee className="w-4 h-4" />{property.price}</span>
+                    <button onClick={() => handleViewDetails(property)} className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition">View</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-end justify-between gap-4 pt-4">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900">Recent Roommate Listings</h2>
+            <p className="text-gray-500 mt-2">People looking for a match right now.</p>
+          </div>
+          <button onClick={() => navigate('roommates')} className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition">
+            View all roommates
+          </button>
+        </div>
+
+        {roommateLoading ? (
+          <div className="rounded-3xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">Loading recent roommates...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {recentRoommates.map((person) => (
+              <div key={person.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-lg transition">
+                <div className="flex items-center space-x-4 mb-4">
+                  <AvatarFallback name={person.name} src={person.avatar} />
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">{person.name}, {person.age}</h3>
+                    <p className="text-sm text-indigo-600 font-medium">{person.role}</p>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500 flex items-center">
+                  <MapPin className="w-4 h-4 mr-1 text-gray-400" /> {person.location}
+                </p>
+                <p className="mt-3 text-sm text-gray-600 line-clamp-3">{person.bio || 'Looking for a compatible roommate.'}</p>
+                <button onClick={() => navigate('roommates')} className="mt-5 text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition">
+                  Explore roommates
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Call to action for owners */}
@@ -445,12 +577,14 @@ export default function App() {
         </div>
       </section>
     </div>
-  );
+    );
+  };
 
   const renderProperties = () => {
     const filteredProperties = propertyFilter === 'All' 
       ? properties 
       : properties.filter(p => p.type === propertyFilter);
+    const selectedCityName = cities.find((city) => city.id === appliedPropertyCityId)?.name || '';
 
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -458,6 +592,11 @@ export default function App() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Explore Properties</h1>
             <p className="text-gray-500 mt-2">Find the perfect place that fits your budget and lifestyle.</p>
+            {selectedCityName ? (
+              <div className="mt-4 inline-flex items-center rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700">
+                City filter: {selectedCityName}
+              </div>
+            ) : null}
           </div>
           
           {/* Filters */}
@@ -520,7 +659,7 @@ export default function App() {
                     <span className="text-gray-500 text-xs">/ month</span>
                   </div>
                   <button 
-                    onClick={() => handleViewDetails(property.id)}
+                    onClick={() => handleViewDetails(property)}
                     className="bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
                   >
                     View Details
@@ -536,7 +675,26 @@ export default function App() {
   };
 
   const renderPropertyDetails = () => {
-    if (!selectedProperty) return null;
+    if (!selectedProperty) {
+      return (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="rounded-3xl border border-gray-200 bg-white p-10 text-center shadow-sm">
+            <p className="text-lg font-semibold text-gray-900">
+              {propertyLoading ? 'Loading property details...' : 'Property details are unavailable.'}
+            </p>
+            <p className="mt-2 text-gray-500">
+              {propertyLoading ? 'Please wait while we load the listing.' : 'Go back to the property list and try another listing.'}
+            </p>
+            <button
+              onClick={() => navigate('properties')}
+              className="mt-6 rounded-xl bg-indigo-600 px-4 py-2 font-semibold text-white transition hover:bg-indigo-700"
+            >
+              Back to Properties
+            </button>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -702,7 +860,7 @@ export default function App() {
                 </div>
                 
                 <p className="text-xs text-center text-gray-500 mt-4">
-                  No brokerage fees applied through Stayora.
+                  No brokerage fees applied through Homivo.
                 </p>
               </div>
             </div>
@@ -767,7 +925,7 @@ export default function App() {
                 <Phone className="w-4 h-4 mr-2" /> Call
               </a>
               <a 
-                href={`https://wa.me/91${person.phone}?text=${encodeURIComponent(`Hi ${person.name}, I saw your profile on Stayora and would love to connect about finding a place together!`)}`}
+                href={`https://wa.me/91${person.phone}?text=${encodeURIComponent(`Hi ${person.name}, I saw your profile on Homivo and would love to connect about finding a place together!`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center bg-[#25D366] hover:bg-[#1ebd5b] text-white py-2.5 rounded-xl text-sm font-semibold transition shadow-sm"
@@ -1038,7 +1196,7 @@ export default function App() {
                 <HomeIcon className="w-6 h-6" />
               </div>
               <span className="font-black text-2xl tracking-tight text-gray-900">
-                Stay<span className="text-indigo-600">ora</span>
+                Homi<span className="text-indigo-600">vo</span>
               </span>
             </div>
 
@@ -1059,6 +1217,13 @@ export default function App() {
                   {item.label}
                 </button>
               ))}
+
+              <Link
+                href="/contact-us"
+                className="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition"
+              >
+                Contact Us
+              </Link>
               
               <div className="w-px h-6 bg-gray-300"></div>
 
@@ -1101,6 +1266,12 @@ export default function App() {
                   {item.label}
                 </button>
               ))}
+              <Link
+                href="/contact-us"
+                className="text-left px-4 py-3 rounded-lg text-base font-semibold text-gray-700 hover:bg-gray-50 transition"
+              >
+                Contact Us
+              </Link>
               <div className="pt-4 mt-2 border-t border-gray-100">
                 <Link
                   href="/list-property"
@@ -1130,7 +1301,7 @@ export default function App() {
             <div className="flex items-center mb-4 text-white">
               <HomeIcon className="w-6 h-6 mr-2 text-indigo-400" />
               <span className="font-black text-2xl tracking-tight">
-                Stay<span className="text-indigo-400">ora</span>
+                Homi<span className="text-indigo-400">vo</span>
               </span>
             </div>
             <p className="text-gray-400 max-w-sm mb-6">
@@ -1156,7 +1327,7 @@ export default function App() {
               <li><button onClick={() => navigate('properties')} className="hover:text-indigo-400 transition">Browse PGs</button></li>
               <li><button onClick={() => navigate('roommates')} className="hover:text-indigo-400 transition">Find Roommates</button></li>
               <li><Link href="/list-property" className="hover:text-indigo-400 transition">List Property</Link></li>
-              <li><a href="#" className="hover:text-indigo-400 transition">Contact Us</a></li>
+              <li><Link href="/contact-us" className="hover:text-indigo-400 transition">Contact Us</Link></li>
             </ul>
           </div>
           
@@ -1175,7 +1346,7 @@ export default function App() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} Stayora. All rights reserved.
+          &copy; {new Date().getFullYear()} Homivo. All rights reserved.
         </div>
       </footer>
     </div>

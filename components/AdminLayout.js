@@ -13,7 +13,7 @@ export default function AdminLayout({ title, subtitle, active, onSignOut, childr
       <div className="flex min-h-screen">
         <aside className="hidden w-72 flex-col bg-slate-950 text-white lg:flex">
           <div className="border-b border-slate-800 px-6 py-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-400">Stayora</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-400">Homi<span className="text-indigo-400">vo</span></p>
             <h2 className="mt-4 text-2xl font-bold">Admin Panel</h2>
             <p className="mt-2 text-sm text-slate-400">Manage users, properties, and app settings.</p>
           </div>

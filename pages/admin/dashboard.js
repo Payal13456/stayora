@@ -43,7 +43,7 @@ export default function AdminDashboard() {
   return (
     <AdminLayout
       title="Dashboard"
-      subtitle="Overview of your Stayora admin panel"
+      subtitle="Overview of your Homivo admin panel"
       active="dashboard"
       onSignOut={handleSignOut}
     >

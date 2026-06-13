@@ -98,7 +98,7 @@ export default function ListPropertyPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <p className="text-sm text-slate-500">Property Listing</p>
-            <h1 className="text-4xl font-semibold text-slate-900">List your property on Stayora</h1>
+            <h1 className="text-4xl font-semibold text-slate-900">List your property on Homivo</h1>
           </div>
           <Link href="/" className="inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
             <HomeIcon className="h-4 w-4" /> Home

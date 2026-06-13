@@ -1,6 +1,6 @@
-# stayora
+# homivo
 
-Initial Next.js setup for the Stayora project.
+Initial Next.js setup for the Homivo project.
 
 ## Getting Started
 
