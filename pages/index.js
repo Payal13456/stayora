@@ -36,7 +36,7 @@ const AvatarFallback = ({ name, src }) => {
 
   if (hasError) {
     return (
-      <div className="w-16 h-16 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-lg font-bold border-2 border-indigo-200">
+      <div className="w-16 h-16 rounded-full bg-indigo-600/30 text-indigo-300 flex items-center justify-center text-lg font-bold border-2 border-indigo-500/50">
         {initials || '?'}
       </div>
     );
@@ -47,7 +47,7 @@ const AvatarFallback = ({ name, src }) => {
       src={src}
       alt={name}
       onError={() => setHasError(true)}
-      className="w-16 h-16 rounded-full object-cover border-2 border-indigo-100"
+      className="w-16 h-16 rounded-full object-cover border-2 border-indigo-500/50"
     />
   );
 };
@@ -57,10 +57,10 @@ const PropertyImageFallback = ({ src, title }) => {
 
   if (hasError) {
     return (
-      <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+      <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <HomeIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-          <p className="text-sm text-gray-500">No image available</p>
+          <HomeIcon className="w-12 h-12 text-slate-500 mx-auto mb-2" />
+          <p className="text-sm text-slate-400">No image available</p>
         </div>
       </div>
     );
@@ -364,219 +364,300 @@ export default function App() {
     ];
 
     return (
-    <div className="space-y-16 pb-16">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-b-3xl text-white">
-        <div className="absolute inset-0">
-          {heroImages.length > 0 ? (
-            <div className="grid h-full w-full gap-3 bg-indigo-900 p-3 md:grid-cols-3">
-              {heroImages.map((src, index) => (
-                <div
-                  key={`${src}-${index}`}
-                  className={`relative overflow-hidden rounded-3xl ${index === 0 ? 'md:col-span-2 md:row-span-2' : 'md:row-span-1'}`}
-                >
-                  <img
-                    src={src}
-                    alt={`Property banner ${index + 1}`}
-                    className="h-full w-full object-cover opacity-80 transition-transform duration-700 hover:scale-105"
-                  />
-                </div>
-              ))}
+      <div className="space-y-20 pb-20">
+        {/* HERO BANNER WITH SEARCH */}
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0">
+            <img
+              src={heroImages[0]}
+              alt="Homivo hero"
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-950/90 via-slate-950/75 to-slate-950/90" />
+            <div className="absolute right-0 top-0 h-72 w-72 -translate-x-1/4 rounded-full bg-indigo-500/10 blur-3xl" />
+          </div>
+
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+            <div className="mb-12 text-center">
+              <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Find your perfect stay</p>
+              <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                Find Amazing Homes for Student Living
+              </h1>
+              <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
+                Discover verified PGs, hostels, flats, and find compatible roommates across top student cities. Homivo makes your search faster and more reliable.
+              </p>
             </div>
-          ) : (
-            <div className="h-full w-full bg-gradient-to-br from-indigo-700 via-indigo-600 to-slate-900" />
-          )}
-          <div className="absolute inset-0 bg-slate-950/55" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/30 to-black/20" />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
-            Find Your Perfect Student Home
-          </h1>
-          <p className="text-lg md:text-xl max-w-2xl mb-10 text-indigo-100">
-            Discover verified PGs, hostels, flats, and the perfect roommates in your new city. 
-            Moving made simple for students.
-          </p>
-          
-          <div className="w-full max-w-3xl bg-white p-2 rounded-full shadow-lg flex items-center">
-            <MapPin className="w-6 h-6 text-gray-400 ml-4 hidden sm:block" />
-            <select
-              value={propertySearchCityId}
-              onChange={(e) => setPropertySearchCityId(e.target.value)}
-              className="w-full px-4 py-3 text-gray-800 bg-transparent outline-none rounded-full"
-              disabled={cityLoading}
-            >
-              <option value="">{cityLoading ? 'Loading cities...' : 'Select a city'}</option>
-              {cities.map((city) => (
-                <option key={city.id} value={city.id}>
-                  {city.name}
-                </option>
-              ))}
-            </select>
-            <button 
-              onClick={handlePropertySearch}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full font-medium transition flex items-center"
-            >
-              <Search className="w-5 h-5 mr-2" />
-              Search
+
+            {/* SEARCH BOX */}
+            <div className="max-w-4xl mx-auto">
+              <div className="rounded-[2rem] bg-white/10 border border-white/15 p-8 shadow-2xl backdrop-blur-md">
+                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-sky-300 mb-4">Quick search</p>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <label className="block">
+                    <span className="text-sm font-semibold text-slate-200">Location</span>
+                    <select
+                      value={propertySearchCityId}
+                      onChange={(e) => setPropertySearchCityId(e.target.value)}
+                      className="mt-2 w-full rounded-2xl border border-white/20 bg-slate-900/80 px-4 py-3 text-white outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition"
+                      disabled={cityLoading}
+                    >
+                      <option value="" className="bg-slate-950 text-slate-100">{cityLoading ? 'Loading...' : 'Select location'}</option>
+                      {cities.map((city) => (
+                        <option key={city.id} value={city.id} className="bg-slate-950 text-slate-100">{city.name}</option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="block">
+                    <span className="text-sm font-semibold text-slate-200">Type</span>
+                    <select
+                      value={propertyFilter}
+                      onChange={(e) => handlePropertyCategoryClick(e.target.value)}
+                      className="mt-2 w-full rounded-2xl border border-white/20 bg-slate-900/80 px-4 py-3 text-white outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition"
+                    >
+                      <option value="All" className="bg-slate-950 text-slate-100">All stays</option>
+                      <option value="PG" className="bg-slate-950 text-slate-100">PGs</option>
+                      <option value="HOSTEL" className="bg-slate-950 text-slate-100">Hostels</option>
+                      <option value="FLAT" className="bg-slate-950 text-slate-100">Flats</option>
+                    </select>
+                  </label>
+
+                  <label className="block">
+                    <span className="text-sm font-semibold text-slate-200">Price Range</span>
+                    <select className="mt-2 w-full rounded-2xl border border-white/20 bg-slate-900/80 px-4 py-3 text-white outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition">
+                      <option className="bg-slate-950 text-slate-100">Up to ₹8,000</option>
+                      <option className="bg-slate-950 text-slate-100">₹8,000 - ₹12,000</option>
+                      <option className="bg-slate-950 text-slate-100">₹12,000+</option>
+                    </select>
+                  </label>
+
+                  <button
+                    onClick={handlePropertySearch}
+                    className="mt-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-sky-500 px-6 py-3 text-white font-semibold shadow-lg shadow-indigo-500/30 transition hover:from-indigo-700 hover:to-sky-600"
+                  >
+                    <Search className="w-4 h-4 inline mr-2" /> Search
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FEATURES SECTION */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              { title: 'Verified Stays', subtitle: 'Trusted listings reviewed by our team.', icon: CheckCircle2 },
+              { title: 'Fast Booking', subtitle: 'Reserve rooms and flats in moments.', icon: Clock },
+              { title: 'Trusted Support', subtitle: 'Help whenever you need it.', icon: Phone }
+            ].map((card) => (
+              <div key={card.title} className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur">
+                <card.icon className="h-8 w-8 text-sky-400" />
+                <h3 className="mt-6 text-xl font-bold text-white">{card.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-400">{card.subtitle}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CITIES SECTION */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-8">
+            <div>
+              <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Explore</p>
+              <h2 className="mt-3 text-3xl font-bold text-white">Top Student Cities</h2>
+            </div>
+            <button onClick={() => navigate('properties')} className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700">
+              Browse All
             </button>
           </div>
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What are you looking for?</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-          {[
-            { title: 'PGs', icon: Building, color: 'bg-blue-100 text-blue-600', action: () => handlePropertyCategoryClick('PG') },
-            { title: 'Hostels', icon: Bed, color: 'bg-green-100 text-green-600', action: () => handlePropertyCategoryClick('HOSTEL') },
-            { title: 'Flats', icon: HomeIcon, color: 'bg-purple-100 text-purple-600', action: () => handlePropertyCategoryClick('FLAT') },
-            { title: 'Roommates', icon: Users, color: 'bg-orange-100 text-orange-600', action: () => navigate('roommates') },
-          ].map((cat, idx) => (
-            <div 
-              key={idx} 
-              onClick={cat.action}
-              className="cursor-pointer group flex flex-col items-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-indigo-100 transition-all"
-            >
-              <div className={`p-4 rounded-full mb-4 ${cat.color} group-hover:scale-110 transition-transform`}>
-                <cat.icon className="w-8 h-8" />
-              </div>
-              <h3 className="font-semibold text-gray-900">{cat.title}</h3>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Top Cities */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-end mb-8">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">Explore Top Cities</h2>
-            <p className="text-gray-500 mt-2">Find the best properties in popular student hubs.</p>
-          </div>
-        </div>
-        {cityLoading ? (
-          <p className="text-sm text-gray-500 mt-2">Loading cities...</p>
-        ) : null}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {topCities.map((city, idx) => (
-            <div 
-              key={idx}
-              onClick={() => handleCityCardClick(city.name)}
-              className="relative h-64 rounded-2xl overflow-hidden cursor-pointer group shadow-sm"
-            >
-              <img 
-                src={city.image} 
-                alt={city.name} 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 p-5 w-full">
-                <h3 className="text-xl font-bold text-white mb-1">{city.name}</h3>
-                <p className="text-sm text-gray-300 font-medium">
-                  {city.count ? `${city.count} Properties` : 'Popular destination'}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Recent Listings */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">Recent Property Listings</h2>
-            <p className="text-gray-500 mt-2">Fresh accommodations added to Homivo.</p>
-          </div>
-          <button onClick={() => navigate('properties')} className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition">
-            View all properties
-          </button>
-        </div>
-
-        {propertyLoading ? (
-          <div className="rounded-3xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">Loading recent properties...</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {recentProperties.map((property) => (
-              <div key={property.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-lg transition group">
-                <div className="relative h-48 overflow-hidden">
-                  <PropertyImageFallback src={property.image} title={property.title} />
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-indigo-700 shadow-sm">
-                    {property.type}
-                  </div>
-                </div>
-                <div className="p-5">
-                  <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{property.title}</h3>
-                  <p className="mt-2 text-sm text-gray-500 flex items-center">
-                    <MapPin className="w-4 h-4 mr-1 text-gray-400" /> {property.location}
-                  </p>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-lg font-bold text-gray-900 flex items-center"><IndianRupee className="w-4 h-4" />{property.price}</span>
-                    <button onClick={() => handleViewDetails(property)} className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition">View</button>
-                  </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {topCities.map((city) => (
+              <div key={city.name} onClick={() => handleCityCardClick(city.name)} className="group relative overflow-hidden rounded-3xl shadow-lg cursor-pointer">
+                <img src={city.image} alt={city.name} className="h-64 w-full object-cover transition duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <p className="text-sm text-slate-300">{city.count} Listings</p>
+                  <h3 className="mt-2 text-xl font-semibold text-white">{city.name}</h3>
                 </div>
               </div>
             ))}
           </div>
-        )}
+        </section>
 
-        <div className="flex items-end justify-between gap-4 pt-4">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">Recent Roommate Listings</h2>
-            <p className="text-gray-500 mt-2">People looking for a match right now.</p>
-          </div>
-          <button onClick={() => navigate('roommates')} className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition">
-            View all roommates
-          </button>
-        </div>
-
-        {roommateLoading ? (
-          <div className="rounded-3xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">Loading recent roommates...</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {recentRoommates.map((person) => (
-              <div key={person.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-lg transition">
-                <div className="flex items-center space-x-4 mb-4">
-                  <AvatarFallback name={person.name} src={person.avatar} />
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900">{person.name}, {person.age}</h3>
-                    <p className="text-sm text-indigo-600 font-medium">{person.role}</p>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-500 flex items-center">
-                  <MapPin className="w-4 h-4 mr-1 text-gray-400" /> {person.location}
-                </p>
-                <p className="mt-3 text-sm text-gray-600 line-clamp-3">{person.bio || 'Looking for a compatible roommate.'}</p>
-                <button onClick={() => navigate('roommates')} className="mt-5 text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition">
-                  Explore roommates
-                </button>
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* FEATURED PGs */}
+          <div className="mb-16 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-8">
+              <div>
+                <p className="text-sm uppercase tracking-[0.35em] text-indigo-300">Featured</p>
+                <h2 className="mt-3 text-3xl font-bold text-white">Top PGs for Students</h2>
               </div>
-            ))}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {recentProperties.filter(p => p.type === 'PG').slice(0, 3).length === 0 ? (
+                <div className="col-span-full rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-slate-400">
+                  No property found.
+                </div>
+              ) : (
+                recentProperties.filter(p => p.type === 'PG').slice(0, 3).map(property => (
+                  <div key={property.id} onClick={() => handleViewDetails(property)} className="bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-indigo-500/50 shadow-lg hover:shadow-indigo-500/20 transition cursor-pointer group">
+                    <div className="relative h-48 overflow-hidden">
+                      <PropertyImageFallback src={property.image} title={property.title} />
+                      <div className="absolute top-4 left-4 bg-indigo-600 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
+                        {property.type}
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-white line-clamp-1">{property.title}</h3>
+                      <p className="text-slate-400 text-sm flex items-center mt-2">
+                        <MapPin className="w-4 h-4 mr-1" /> {property.location}
+                      </p>
+                      <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                        <span className="text-2xl font-bold text-white flex items-center">
+                          <IndianRupee className="w-5 h-5" />{property.price}
+                        </span>
+                        <span className="text-xs text-slate-400">/month</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        )}
-      </section>
 
-      {/* Call to action for owners */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-indigo-50 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between border border-indigo-100">
-          <div className="mb-6 md:mb-0 md:pr-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Are you a Property Owner?</h2>
-            <p className="text-gray-600 mb-0 max-w-lg">
-              List your PG, hostel, or flat on our platform to reach thousands of verified students looking for accommodation in your area.
-            </p>
+          {/* FEATURED HOSTELS */}
+          <div className="mb-16 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-8">
+              <div>
+                <p className="text-sm uppercase tracking-[0.35em] text-indigo-300">Featured</p>
+                <h2 className="mt-3 text-3xl font-bold text-white">Top Hostels for Students</h2>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {recentProperties.filter(p => p.type === 'Hostel').slice(0, 3).length === 0 ? (
+                <div className="col-span-full rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-slate-400">
+                  No property found.
+                </div>
+              ) : (
+                recentProperties.filter(p => p.type === 'Hostel').slice(0, 3).map(property => (
+                  <div key={property.id} onClick={() => handleViewDetails(property)} className="bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-indigo-500/50 shadow-lg hover:shadow-indigo-500/20 transition cursor-pointer group">
+                    <div className="relative h-48 overflow-hidden">
+                      <PropertyImageFallback src={property.image} title={property.title} />
+                      <div className="absolute top-4 left-4 bg-indigo-600 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
+                        {property.type}
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-white line-clamp-1">{property.title}</h3>
+                      <p className="text-slate-400 text-sm flex items-center mt-2">
+                        <MapPin className="w-4 h-4 mr-1" /> {property.location}
+                      </p>
+                      <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                        <span className="text-2xl font-bold text-white flex items-center">
+                          <IndianRupee className="w-5 h-5" />{property.price}
+                        </span>
+                        <span className="text-xs text-slate-400">/month</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-          <Link
-            href="/list-property"
-            className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition whitespace-nowrap shadow-sm"
-          >
-            <PlusCircle className="w-5 h-5" />
-            List Your Property
-          </Link>
-        </div>
-      </section>
-    </div>
+
+          {/* FEATURED ROOMMATES */}
+          <div className="mb-16 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-8">
+              <div>
+                <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Find Your Match</p>
+                <h2 className="mt-3 text-3xl font-bold text-white">Featured Roommates</h2>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {roommates.slice(0, 3).length === 0 ? (
+                <div className="col-span-full rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-slate-400">
+                  No roommate found.
+                </div>
+              ) : (
+                roommates.slice(0, 3).map(roommate => (
+                  <div key={roommate.id} className="bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-sky-500/50 shadow-lg hover:shadow-sky-500/20 transition cursor-pointer group p-6">
+                    <div className="flex items-center gap-4 mb-4">
+                      <AvatarFallback name={roommate.name} src={roommate.avatar} />
+                      <div>
+                        <h3 className="text-lg font-bold text-white">{roommate.name}</h3>
+                        <p className="text-sm text-sky-300">{roommate.age} • {roommate.role}</p>
+                      </div>
+                    </div>
+                    <p className="text-slate-400 text-sm mb-4">{roommate.bio}</p>
+                    <div className="mb-4 space-y-2">
+                      <p className="text-sm text-slate-300 flex items-center">
+                        <MapPin className="w-4 h-4 mr-2 text-slate-500" /> {roommate.location}
+                      </p>
+                      <p className="text-sm text-slate-300 flex items-center">
+                        <IndianRupee className="w-4 h-4 mr-2 text-slate-500" /> {roommate.budget}/month
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {roommate.preferences.slice(0, 2).map((pref, idx) => (
+                        <span key={idx} className="bg-sky-500/20 text-sky-300 text-xs px-2 py-1 rounded-md">
+                          {pref}
+                        </span>
+                      ))}
+                    </div>
+                    <button className="w-full bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                      <Phone className="w-4 h-4 inline mr-2" /> Contact
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* RECENT PROPERTIES */}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-8">
+              <div>
+                <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Latest Listings</p>
+                <h2 className="mt-3 text-3xl font-bold text-white">Recently Added Properties</h2>
+              </div>
+              <button onClick={() => navigate('properties')} className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700">
+                View All
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {recentProperties.length === 0 ? (
+                <div className="col-span-full rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-slate-400">
+                  No property found.
+                </div>
+              ) : (
+                recentProperties.map(property => (
+                  <div key={property.id} onClick={() => handleViewDetails(property)} className="bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-sky-500/50 shadow-lg hover:shadow-sky-500/20 transition cursor-pointer group">
+                    <div className="relative h-48 overflow-hidden">
+                      <PropertyImageFallback src={property.image} title={property.title} />
+                      <div className="absolute top-4 left-4 bg-indigo-600 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
+                        {property.type}
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-white line-clamp-1">{property.title}</h3>
+                      <p className="text-slate-400 text-sm flex items-center mt-2">
+                        <MapPin className="w-4 h-4 mr-1" /> {property.location}
+                      </p>
+                      <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+                        <span className="text-2xl font-bold text-white flex items-center">
+                          <IndianRupee className="w-5 h-5" />{property.price}
+                        </span>
+                        <span className="text-xs text-slate-400">/month</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </section>
+      </div>
     );
   };
 
@@ -587,26 +668,26 @@ export default function App() {
     const selectedCityName = cities.find((city) => city.id === appliedPropertyCityId)?.name || '';
 
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Explore Properties</h1>
-            <p className="text-gray-500 mt-2">Find the perfect place that fits your budget and lifestyle.</p>
+            <h1 className="text-3xl font-bold text-white">Properties</h1>
+            <p className="text-slate-300 mt-2">Find the perfect place that fits your budget and lifestyle.</p>
             {selectedCityName ? (
-              <div className="mt-4 inline-flex items-center rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700">
-                City filter: {selectedCityName}
+              <div className="mt-4 inline-flex items-center rounded-full bg-indigo-600/20 border border-indigo-500/50 px-4 py-2 text-sm font-semibold text-indigo-300">
+                Filtered by: {selectedCityName}
               </div>
             ) : null}
           </div>
           
           {/* Filters */}
-          <div className="flex bg-gray-100 p-1 rounded-xl w-max">
+          <div className="flex bg-white/5 border border-white/10 p-1 rounded-xl w-max">
             {['All', 'PG', 'HOSTEL', 'FLAT'].map(f => (
               <button
                 key={f}
                 onClick={() => setPropertyFilter(f)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                  propertyFilter === f ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                  propertyFilter === f ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white'
                 }`}
               >
                 {f}
@@ -617,52 +698,52 @@ export default function App() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {propertyLoading ? (
-            <div className="col-span-full rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+            <div className="col-span-full rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-slate-300 shadow-sm">
               Loading properties...
             </div>
           ) : filteredProperties.length === 0 ? (
-            <div className="col-span-full rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+            <div className="col-span-full rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-slate-300 shadow-sm">
               No properties found.
             </div>
           ) : filteredProperties.map(property => (
-            <div key={property.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-lg transition flex flex-col group">
+            <div key={property.id} onClick={() => handleViewDetails(property)} className="bg-slate-900/50 rounded-2xl overflow-hidden shadow-sm border border-white/10 hover:border-sky-500/50 hover:shadow-sky-500/20 transition flex flex-col group cursor-pointer">
               <div className="relative h-56 overflow-hidden group">
                 <PropertyImageFallback src={property.image} title={property.title} />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-indigo-700 shadow-sm">
+                <div className="absolute top-4 left-4 bg-indigo-600/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
                   {property.type}
                 </div>
-                <div className="absolute top-4 right-4 bg-gray-900/80 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-white flex items-center shadow-sm">
+                <div className="absolute top-4 right-4 bg-slate-900/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-white flex items-center shadow-sm">
                   <User className="w-3 h-3 mr-1" /> {property.gender}
                 </div>
               </div>
               <div className="p-5 flex-grow flex flex-col">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{property.title}</h3>
+                  <h3 className="text-lg font-bold text-white line-clamp-1">{property.title}</h3>
                 </div>
-                <p className="text-gray-500 text-sm flex items-center mb-4">
-                  <MapPin className="w-4 h-4 mr-1 text-gray-400" /> {property.location}
+                <p className="text-slate-400 text-sm flex items-center mb-4">
+                  <MapPin className="w-4 h-4 mr-1 text-slate-500" /> {property.location}
                 </p>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {property.amenities.map((amenity, idx) => (
-                    <span key={idx} className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-md">
+                    <span key={idx} className="bg-white/10 text-slate-300 text-xs px-2 py-1 rounded-md">
                       {amenity}
                     </span>
                   ))}
                 </div>
                 
-                <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+                <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-gray-900 flex items-center">
+                    <span className="text-2xl font-bold text-white flex items-center">
                       <IndianRupee className="w-5 h-5" />{property.price}
                     </span>
-                    <span className="text-gray-500 text-xs">/ month</span>
+                    <span className="text-slate-400 text-xs">/ month</span>
                   </div>
                   <button 
                     onClick={() => handleViewDetails(property)}
-                    className="bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
                   >
-                    View Details
+                    View
                   </button>
                 </div>
               </div>
@@ -677,17 +758,17 @@ export default function App() {
   const renderPropertyDetails = () => {
     if (!selectedProperty) {
       return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="rounded-3xl border border-gray-200 bg-white p-10 text-center shadow-sm">
-            <p className="text-lg font-semibold text-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center">
+            <p className="text-lg font-semibold text-white">
               {propertyLoading ? 'Loading property details...' : 'Property details are unavailable.'}
             </p>
-            <p className="mt-2 text-gray-500">
+            <p className="mt-2 text-slate-300">
               {propertyLoading ? 'Please wait while we load the listing.' : 'Go back to the property list and try another listing.'}
             </p>
             <button
               onClick={() => navigate('properties')}
-              className="mt-6 rounded-xl bg-indigo-600 px-4 py-2 font-semibold text-white transition hover:bg-indigo-700"
+              className="mt-6 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition hover:bg-indigo-700"
             >
               Back to Properties
             </button>
@@ -702,12 +783,12 @@ export default function App() {
         {/* Schedule Visit Modal */}
         {showScheduleModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl animate-in zoom-in duration-200">
+            <div className="bg-slate-900 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl animate-in zoom-in duration-200 border border-white/10">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Schedule a Visit</h2>
+                <h2 className="text-2xl font-bold text-white">Schedule a Visit</h2>
                 <button 
                   onClick={() => setShowScheduleModal(false)} 
-                  className="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition"
+                  className="text-slate-400 hover:bg-white/10 p-2 rounded-full transition"
                 >
                   <X className="w-5 h-5"/>
                 </button>
@@ -715,27 +796,27 @@ export default function App() {
               
               <div className="space-y-5 mb-8">
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">Select Date</label>
+                  <label className="text-sm font-semibold text-slate-200 mb-1.5 block">Select Date</label>
                   <div className="relative">
-                    <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                    <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
                     <input 
                       type="date" 
                       value={visitDate} 
                       onChange={(e) => setVisitDate(e.target.value)} 
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition" 
+                      className="w-full pl-12 pr-4 py-3 rounded-xl border border-white/10 bg-slate-800 text-white focus:ring-2 focus:ring-indigo-600 outline-none transition" 
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-semibold text-gray-700 mb-1.5 block">Select Time</label>
+                  <label className="text-sm font-semibold text-slate-200 mb-1.5 block">Select Time</label>
                   <div className="relative">
-                    <Clock className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                    <Clock className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
                     <input 
                       type="time" 
                       value={visitTime} 
                       onChange={(e) => setVisitTime(e.target.value)} 
-                      className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none transition" 
+                      className="w-full pl-12 pr-4 py-3 rounded-xl border border-white/10 bg-slate-800 text-white focus:ring-2 focus:ring-indigo-600 outline-none transition" 
                     />
                   </div>
                 </div>
@@ -744,7 +825,7 @@ export default function App() {
               <button
                 onClick={handleScheduleConfirm}
                 disabled={!visitDate || !visitTime}
-                className="w-full bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition flex justify-center items-center"
+                className="w-full bg-indigo-600 disabled:bg-slate-700 disabled:cursor-not-allowed hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition flex justify-center items-center"
               >
                 Confirm Visit
               </button>
@@ -754,12 +835,12 @@ export default function App() {
 
         <button 
           onClick={() => navigate('properties')}
-          className="flex items-center text-indigo-600 hover:text-indigo-800 font-medium mb-6 transition"
+          className="flex items-center text-indigo-400 hover:text-indigo-300 font-medium mb-6 transition"
         >
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Properties
         </button>
 
-        <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-200">
+        <div className="bg-slate-900/50 rounded-3xl overflow-hidden shadow-2xl border border-white/10">
           {/* Hero Image */}
           <div className="h-64 md:h-96 w-full relative">
             <img 
@@ -767,7 +848,7 @@ export default function App() {
               alt={selectedProperty.title} 
               className="w-full h-full object-cover"
             />
-            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-4 py-2 rounded-full text-sm font-bold text-indigo-700 shadow-sm">
+            <div className="absolute top-4 left-4 bg-indigo-600/90 backdrop-blur px-4 py-2 rounded-full text-sm font-bold text-white shadow-sm">
               {selectedProperty.type}
             </div>
           </div>
@@ -776,39 +857,39 @@ export default function App() {
             {/* Main Content Info */}
             <div className="lg:col-span-2 space-y-8">
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{selectedProperty.title}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{selectedProperty.title}</h1>
                 {(() => {
                   const derivedLocation = selectedProperty.city?.name || selectedProperty.address || selectedProperty.location || 'Unknown location';
                   return (
-                    <p className="text-lg text-gray-500 flex items-center">
-                      <MapPin className="w-5 h-5 mr-2 text-gray-400" /> {derivedLocation}
+                    <p className="text-lg text-slate-300 flex items-center">
+                      <MapPin className="w-5 h-5 mr-2 text-slate-500" /> {derivedLocation}
                     </p>
                   );
                 })()}
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <div className="bg-indigo-50 px-4 py-3 rounded-xl flex items-center">
-                  <User className="w-5 h-5 text-indigo-600 mr-2" />
+                <div className="bg-indigo-600/20 border border-indigo-500/50 px-4 py-3 rounded-xl flex items-center">
+                  <User className="w-5 h-5 text-indigo-300 mr-2" />
                   <div>
-                    <p className="text-xs text-gray-500 font-medium">Preferred Gender</p>
-                    <p className="font-bold text-gray-900">{selectedProperty.genderPreference || selectedProperty.gender || 'Any'}</p>
+                    <p className="text-xs text-slate-400 font-medium">Preferred Gender</p>
+                    <p className="font-bold text-white">{selectedProperty.genderPreference || selectedProperty.gender || 'Any'}</p>
                   </div>
                 </div>
-                <div className="bg-indigo-50 px-4 py-3 rounded-xl flex items-center">
-                  <Building className="w-5 h-5 text-indigo-600 mr-2" />
+                <div className="bg-indigo-600/20 border border-indigo-500/50 px-4 py-3 rounded-xl flex items-center">
+                  <Building className="w-5 h-5 text-indigo-300 mr-2" />
                   <div>
-                    <p className="text-xs text-gray-500 font-medium">Property Type</p>
-                    <p className="font-bold text-gray-900">{selectedProperty.type}</p>
+                    <p className="text-xs text-slate-400 font-medium">Property Type</p>
+                    <p className="font-bold text-white">{selectedProperty.type}</p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Amenities</h3>
+                <h3 className="text-xl font-bold text-white mb-4">Amenities</h3>
                 <div className="flex flex-wrap gap-3">
                   {(selectedProperty.amenities || []).map((amenity, idx) => (
-                      <span key={idx} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium">
+                      <span key={idx} className="bg-white/10 border border-white/20 text-slate-200 px-4 py-2 rounded-lg font-medium">
                         {amenity}
                       </span>
                     ))}
@@ -816,8 +897,8 @@ export default function App() {
               </div>
 
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">About this property</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <h3 className="text-xl font-bold text-white mb-4">About this property</h3>
+                <p className="text-slate-300 leading-relaxed">
                   {(() => {
                     const derivedLocation = selectedProperty.city?.name || selectedProperty.address || selectedProperty.location || '';
                     const typeLower = (selectedProperty.type || 'property').toLowerCase();
@@ -829,37 +910,37 @@ export default function App() {
 
             {/* Sidebar / Pricing Card */}
             <div className="lg:col-span-1">
-              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 sticky top-24">
+              <div className="bg-slate-800/50 border border-white/10 p-6 rounded-2xl sticky top-24">
                 <div className="mb-6">
-                  <span className="text-gray-500 text-sm font-medium">Monthly Rent</span>
+                  <span className="text-slate-400 text-sm font-medium">Monthly Rent</span>
                   <div className="flex items-end mt-1">
-                    <span className="text-4xl font-extrabold text-gray-900 flex items-center">
+                    <span className="text-4xl font-extrabold text-white flex items-center">
                       <IndianRupee className="w-8 h-8" />{selectedProperty.price}
                     </span>
-                    <span className="text-gray-500 ml-1 mb-1">/ month</span>
+                    <span className="text-slate-400 ml-1 mb-1">/ month</span>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition flex justify-center items-center shadow-sm">
+                  <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition flex justify-center items-center shadow-lg shadow-indigo-500/20">
                     <Phone className="w-5 h-5 mr-2" /> Contact Owner
                   </button>
                   
                   {visitScheduled ? (
-                    <div className="w-full bg-green-50 text-green-700 border border-green-200 font-bold py-4 rounded-xl flex justify-center items-center animate-in zoom-in duration-300">
+                    <div className="w-full bg-emerald-600/20 text-emerald-300 border border-emerald-500/50 font-bold py-4 rounded-xl flex justify-center items-center animate-in zoom-in duration-300">
                       <CheckCircle2 className="w-5 h-5 mr-2" /> Visit Scheduled
                     </div>
                   ) : (
                     <button 
                       onClick={() => setShowScheduleModal(true)}
-                      className="w-full bg-white hover:bg-gray-50 text-indigo-600 border border-indigo-200 font-bold py-4 rounded-xl transition flex justify-center items-center"
+                      className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold py-4 rounded-xl transition flex justify-center items-center"
                     >
                       <Calendar className="w-5 h-5 mr-2" /> Schedule a Visit
                     </button>
                   )}
                 </div>
                 
-                <p className="text-xs text-center text-gray-500 mt-4">
+                <p className="text-xs text-center text-slate-400 mt-4">
                   No brokerage fees applied through Homivo.
                 </p>
               </div>
@@ -871,47 +952,47 @@ export default function App() {
   };
 
   const renderRoommates = () => (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Find a Roommate</h1>
-        <p className="text-gray-500 mt-2">Connect with students looking for shared accommodation.</p>
+        <h1 className="text-3xl font-bold text-white">Find a Roommate</h1>
+        <p className="text-slate-300 mt-2">Connect with students looking for shared accommodation.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {roommateLoading ? (
-          <div className="col-span-full rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+          <div className="col-span-full rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-slate-300 shadow-sm">
             Loading roommates...
           </div>
         ) : roommates.length === 0 ? (
-          <div className="col-span-full rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+          <div className="col-span-full rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-slate-300 shadow-sm">
             No roommates found at the moment.
           </div>
         ) : roommates.map(person => (
-          <div key={person.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition">
+          <div key={person.id} className="bg-slate-900/50 rounded-2xl p-6 shadow-sm border border-white/10 hover:border-sky-500/50 hover:shadow-sky-500/20 transition">
             <div className="flex items-center space-x-4 mb-4">
               <AvatarFallback name={person.name} src={person.avatar} />
               <div>
-                <h3 className="text-lg font-bold text-gray-900">{person.name}, {person.age}</h3>
-                <p className="text-sm text-indigo-600 font-medium">{person.role}</p>
+                <h3 className="text-lg font-bold text-white">{person.name}, {person.age}</h3>
+                <p className="text-sm text-indigo-300 font-medium">{person.role}</p>
               </div>
             </div>
             
-            <p className="text-gray-600 text-sm mb-4 line-clamp-3">"{person.bio}"</p>
+            <p className="text-slate-300 text-sm mb-4 line-clamp-3">"{person.bio}"</p>
             
             <div className="space-y-3 mb-6">
-              <div className="flex items-center text-sm text-gray-500">
-                <MapPin className="w-4 h-4 mr-2 text-gray-400" /> 
-                Preferred Loc: <span className="font-medium text-gray-900 ml-1">{person.location}</span>
+              <div className="flex items-center text-sm text-slate-300">
+                <MapPin className="w-4 h-4 mr-2 text-slate-400" /> 
+                Location: <span className="font-medium text-white ml-1">{person.location}</span>
               </div>
-              <div className="flex items-center text-sm text-gray-500">
-                <IndianRupee className="w-4 h-4 mr-2 text-gray-400" /> 
-                Budget: <span className="font-medium text-gray-900 ml-1">Up to ₹{person.budget}</span>
+              <div className="flex items-center text-sm text-slate-300">
+                <IndianRupee className="w-4 h-4 mr-2 text-slate-400" /> 
+                Budget: <span className="font-medium text-white ml-1">₹{person.budget}</span>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-2 mb-6">
               {person.preferences.map((pref, idx) => (
-                <span key={idx} className="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-1 rounded-full font-medium">
+                <span key={idx} className="bg-indigo-600/20 text-indigo-300 text-xs px-2.5 py-1 rounded-full font-medium border border-indigo-500/30">
                   {pref}
                 </span>
               ))}
@@ -920,7 +1001,7 @@ export default function App() {
             <div className="grid grid-cols-2 gap-3">
               <a 
                 href={`tel:${person.phone}`}
-                className="flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-900 py-2.5 rounded-xl text-sm font-semibold transition"
+                className="flex items-center justify-center bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-xl text-sm font-semibold transition border border-white/10"
               >
                 <Phone className="w-4 h-4 mr-2" /> Call
               </a>
@@ -930,7 +1011,7 @@ export default function App() {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center bg-[#25D366] hover:bg-[#1ebd5b] text-white py-2.5 rounded-xl text-sm font-semibold transition shadow-sm"
               >
-                <MessageCircle className="w-4 h-4 mr-2" /> WhatsApp
+                <MessageCircle className="w-4 h-4 mr-2" /> Chat
               </a>
             </div>
           </div>
@@ -1182,85 +1263,76 @@ export default function App() {
 
   // --- LAYOUT ---
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
       {/* HEADER */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/95 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center">
-            {/* Logo */}
-            <div 
-              className="flex items-center cursor-pointer group"
-              onClick={() => navigate('home')}
+          <div className="flex h-24 items-center justify-between gap-4">
+            <Link
+              href="/"
+              className="flex items-center gap-3"
             >
-              <div className="bg-indigo-600 text-white p-2 rounded-xl mr-3 group-hover:bg-indigo-700 transition">
+              <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-gradient-to-r from-indigo-600 to-sky-500 text-white shadow-lg shadow-indigo-500/20">
                 <HomeIcon className="w-6 h-6" />
               </div>
-              <span className="font-black text-2xl tracking-tight text-gray-900">
-                Homi<span className="text-indigo-600">vo</span>
-              </span>
-            </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Homivo</p>
+                <p className="text-lg font-semibold text-white">Student Housing</p>
+              </div>
+            </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8 items-center">
+            <nav className="hidden lg:flex items-center gap-10">
               {[
                 { id: 'home', label: 'Home' },
                 { id: 'properties', label: 'Browse Properties' },
                 { id: 'roommates', label: 'Find Roommates' },
-              ].map(item => (
+              ].map((item) => (
                 <button
                   key={item.id}
                   onClick={() => navigate(item.id)}
                   className={`text-sm font-semibold transition ${
-                    activeTab === item.id || (activeTab === 'property-details' && item.id === 'properties') ? 'text-indigo-600' : 'text-gray-600 hover:text-indigo-600'
+                    activeTab === item.id || (activeTab === 'property-details' && item.id === 'properties') ? 'text-white' : 'text-slate-300 hover:text-white'
                   }`}
                 >
                   {item.label}
                 </button>
               ))}
-
-              <Link
-                href="/contact-us"
-                className="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition"
-              >
+              <Link href="/contact-us" className="text-sm font-semibold text-slate-300 hover:text-white transition">
                 Contact Us
-              </Link>
-              
-              <div className="w-px h-6 bg-gray-300"></div>
-
-              <Link
-                href="/list-property"
-                className="bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 px-4 py-2 rounded-lg text-sm font-bold transition flex items-center"
-              >
-                <PlusCircle className="w-4 h-4 mr-2" /> List Property
               </Link>
             </nav>
 
-            {/* Mobile menu button */}
-            <div className="md:hidden flex items-center">
-              <button 
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-gray-600 hover:text-gray-900 p-2"
+            <div className="hidden lg:flex items-center gap-3">
+              <Link
+                href="/list-property"
+                className="rounded-full bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700"
               >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
+                List Property
+              </Link>
             </div>
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden rounded-full border border-white/10 p-3 text-slate-300 shadow-sm hover:border-white/20 hover:text-white transition"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-b border-gray-200 shadow-lg absolute w-full left-0 z-40">
-            <div className="px-4 pt-2 pb-6 space-y-2 flex flex-col">
+          <div className="md:hidden bg-slate-900/95 border-b border-white/10 shadow-lg absolute w-full left-0 z-40">
+            <div className="px-4 pt-4 pb-6 space-y-2 flex flex-col">
               {[
                 { id: 'home', label: 'Home' },
                 { id: 'properties', label: 'Browse Properties' },
                 { id: 'roommates', label: 'Find Roommates' },
-              ].map(item => (
+              ].map((item) => (
                 <button
                   key={item.id}
                   onClick={() => navigate(item.id)}
-                  className={`text-left px-4 py-3 rounded-lg text-base font-semibold transition ${
-                    activeTab === item.id || (activeTab === 'property-details' && item.id === 'properties') ? 'bg-indigo-50 text-indigo-600' : 'text-gray-700 hover:bg-gray-50'
+                  className={`text-left w-full rounded-2xl px-4 py-3 text-base font-semibold transition ${
+                    activeTab === item.id || (activeTab === 'property-details' && item.id === 'properties') ? 'bg-indigo-600/20 text-indigo-300' : 'text-slate-300 hover:bg-white/10'
                   }`}
                 >
                   {item.label}
@@ -1268,14 +1340,14 @@ export default function App() {
               ))}
               <Link
                 href="/contact-us"
-                className="text-left px-4 py-3 rounded-lg text-base font-semibold text-gray-700 hover:bg-gray-50 transition"
+                className="text-left block w-full rounded-2xl px-4 py-3 text-base font-semibold text-slate-300 hover:bg-white/10 transition"
               >
                 Contact Us
               </Link>
-              <div className="pt-4 mt-2 border-t border-gray-100">
+              <div className="pt-4 mt-2 border-t border-white/10">
                 <Link
                   href="/list-property"
-                  className="w-full bg-indigo-600 text-white px-4 py-3 rounded-lg text-base font-bold transition flex items-center justify-center"
+                  className="w-full rounded-2xl bg-indigo-600 px-4 py-3 text-base font-bold text-white transition flex items-center justify-center"
                 >
                   <PlusCircle className="w-5 h-5 mr-2" /> List Property
                 </Link>
@@ -1295,58 +1367,62 @@ export default function App() {
       </main>
 
       {/* FOOTER */}
-      <footer className="bg-gray-900 text-white py-12 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center mb-4 text-white">
-              <HomeIcon className="w-6 h-6 mr-2 text-indigo-400" />
-              <span className="font-black text-2xl tracking-tight">
-                Homi<span className="text-indigo-400">vo</span>
-              </span>
+      <footer className="bg-slate-950 text-slate-300 py-8 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="grid gap-10 lg:grid-cols-4">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-gradient-to-r from-indigo-600 to-sky-500 text-white shadow-lg shadow-indigo-500/20">
+                  <HomeIcon className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Homivo</p>
+                  <p className="text-xl font-semibold text-white">Student Housing</p>
+                </div>
+              </div>
+              <p className="max-w-sm text-slate-400">
+                A premium student accommodation marketplace built for modern renters and property owners. Search verified stays, contact trusted hosts, and move with confidence.
+              </p>
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-slate-200 hover:bg-indigo-500 hover:text-white transition cursor-pointer">f</span>
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-slate-200 hover:bg-indigo-500 hover:text-white transition cursor-pointer">X</span>
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-slate-200 hover:bg-indigo-500 hover:text-white transition cursor-pointer">in</span>
+              </div>
             </div>
-            <p className="text-gray-400 max-w-sm mb-6">
-              The ultimate platform connecting students with the best accommodations and compatible roommates across India.
-            </p>
-            <div className="flex space-x-4">
-               {/* Dummy social icons placeholders */}
-               <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white cursor-pointer transition">
-                 <span className="font-bold">f</span>
-               </div>
-               <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white cursor-pointer transition">
-                 <span className="font-bold">X</span>
-               </div>
-               <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white cursor-pointer transition">
-                 <span className="font-bold">in</span>
-               </div>
+
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Explore</h4>
+              <ul className="mt-6 space-y-3 text-slate-400">
+                <li><button onClick={() => navigate('properties')} className="hover:text-white transition">Browse Properties</button></li>
+                <li><button onClick={() => navigate('roommates')} className="hover:text-white transition">Find Roommates</button></li>
+                <li><Link href="/list-property" className="hover:text-white transition">List Property</Link></li>
+                <li><Link href="/contact-us" className="hover:text-white transition">Contact Us</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Services</h4>
+              <ul className="mt-6 space-y-3 text-slate-400">
+                <li>Verified Listings</li>
+                <li>Instant Booking</li>
+                <li>Roommate Matching</li>
+                <li>Owner Dashboard</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Contact</h4>
+              <div className="mt-6 space-y-4 text-slate-400">
+                <p className="flex items-start gap-3"><MapPin className="mt-1 h-5 w-5 text-indigo-400" />123 Startup Hub, Scheme 54, Indore, MP</p>
+                <p className="flex items-center gap-3"><Phone className="h-5 w-5 text-indigo-400" />+91 98765 43210</p>
+                <p className="rounded-3xl bg-white/5 px-4 py-3 text-slate-300">support@homivo.com</p>
+              </div>
             </div>
           </div>
-          
-          <div>
-            <h4 className="text-lg font-bold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li><button onClick={() => navigate('properties')} className="hover:text-indigo-400 transition">Browse PGs</button></li>
-              <li><button onClick={() => navigate('roommates')} className="hover:text-indigo-400 transition">Find Roommates</button></li>
-              <li><Link href="/list-property" className="hover:text-indigo-400 transition">List Property</Link></li>
-              <li><Link href="/contact-us" className="hover:text-indigo-400 transition">Contact Us</Link></li>
-            </ul>
+
+          <div className="mt-16 border-t border-white/10 pt-8 text-center text-sm text-slate-500">
+            &copy; {new Date().getFullYear()} Homivo. All rights reserved.
           </div>
-          
-          <div>
-            <h4 className="text-lg font-bold mb-4">Support</h4>
-            <ul className="space-y-3 text-gray-400">
-              <li className="flex items-start">
-                <MapPin className="w-5 h-5 mr-2 text-indigo-400 shrink-0 mt-0.5" />
-                <span>123 Startup Hub, Scheme 54, Indore, MP</span>
-              </li>
-              <li className="flex items-center">
-                <Phone className="w-5 h-5 mr-2 text-indigo-400 shrink-0" />
-                <span>+91 98765 43210</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} Homivo. All rights reserved.
         </div>
       </footer>
     </div>

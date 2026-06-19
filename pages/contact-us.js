@@ -12,9 +12,12 @@ import {
   Building,
   Bed,
   PlusCircle,
+  Menu,
+  X,
 } from 'lucide-react';
 
 export default function ContactUsPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -39,225 +42,257 @@ export default function ContactUsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white sticky top-0 z-50">
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/95 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-20 items-center justify-between">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="rounded-xl bg-indigo-600 p-2 text-white transition group-hover:bg-indigo-700">
-                <HomeIcon className="h-6 w-6" />
+          <div className="flex h-24 items-center justify-between gap-4">
+            <Link
+              href="/"
+              className="flex items-center gap-3"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-gradient-to-r from-indigo-600 to-sky-500 text-white shadow-lg shadow-indigo-500/20">
+                <HomeIcon className="w-6 h-6" />
               </div>
-              <span className="text-2xl font-black tracking-tight text-slate-900">
-                Homi<span className="text-indigo-600">vo</span>
-              </span>
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Homivo</p>
+                <p className="text-lg font-semibold text-white">Student Housing</p>
+              </div>
             </Link>
 
-            <nav className="hidden md:flex space-x-8 items-center">
-              <Link href="/" className="text-sm font-semibold transition text-slate-600 hover:text-indigo-600">
-                Home
-              </Link>
-              <Link href="/#properties" className="text-sm font-semibold transition text-slate-600 hover:text-indigo-600">
-                Browse Properties
-              </Link>
-              <Link href="/#roommates" className="text-sm font-semibold transition text-slate-600 hover:text-indigo-600">
-                Find Roommates
-              </Link>
-              <Link href="/contact-us" aria-current="page" className="text-sm font-semibold transition text-indigo-600">
+            <nav className="hidden lg:flex items-center gap-10">
+              {[
+                { id: 'home', label: 'Home', href: '/' },
+                { id: 'properties', label: 'Browse Properties', href: '/#properties' },
+                { id: 'roommates', label: 'Find Roommates', href: '/#roommates' },
+              ].map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className="text-sm font-semibold transition text-slate-300 hover:text-white"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <Link href="/contact-us" className="text-sm font-semibold text-white transition">
                 Contact Us
               </Link>
+            </nav>
 
-              <div className="w-px h-6 bg-gray-300"></div>
-
+            <div className="hidden lg:flex items-center gap-3">
               <Link
                 href="/list-property"
-                className="bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 px-4 py-2 rounded-lg text-sm font-bold transition flex items-center"
+                className="rounded-full bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700"
               >
-                <PlusCircle className="w-4 h-4 mr-2" /> List Property
+                List Property
               </Link>
-            </nav>
+            </div>
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden rounded-full border border-white/10 p-3 text-slate-300 shadow-sm hover:border-white/20 hover:text-white transition"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
         </div>
+
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-slate-900/95 border-b border-white/10 shadow-lg absolute w-full left-0 z-40">
+            <div className="px-4 pt-4 pb-6 space-y-2 flex flex-col">
+              {[
+                { id: 'home', label: 'Home', href: '/' },
+                { id: 'properties', label: 'Browse Properties', href: '/#properties' },
+                { id: 'roommates', label: 'Find Roommates', href: '/#roommates' },
+              ].map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className="text-left block w-full rounded-2xl px-4 py-3 text-base font-semibold text-slate-300 hover:bg-white/10 transition"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <Link
+                href="/contact-us"
+                className="text-left block w-full rounded-2xl px-4 py-3 text-base font-semibold text-white bg-indigo-600/20 transition"
+              >
+                Contact Us
+              </Link>
+              <div className="pt-4 mt-2 border-t border-white/10">
+                <Link
+                  href="/list-property"
+                  className="w-full rounded-2xl bg-indigo-600 px-4 py-3 text-base font-bold text-white transition flex items-center justify-center"
+                >
+                  <PlusCircle className="w-5 h-5 mr-2" /> List Property
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <section className="rounded-[2rem] bg-white p-8 md:p-10 shadow-sm border border-slate-200">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-600">Contact us</p>
-            <h1 className="mt-3 text-3xl md:text-5xl font-bold tracking-tight text-slate-900">
-              Talk to the Homivo team
-            </h1>
-            <p className="mt-4 max-w-2xl text-slate-600">
-              Need help finding accommodation, posting a property, or connecting with a roommate? Send us a note and we’ll get back quickly.
-            </p>
+      <main className="relative overflow-hidden">
+        <div className="absolute right-0 top-0 h-72 w-72 -translate-x-1/4 rounded-full bg-indigo-500/20 blur-3xl" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="mb-12 text-center">
+            <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Contact us</p>
+            <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl">Need help? Let Homivo support you.</h1>
+            <p className="mx-auto mt-4 max-w-2xl text-slate-400">Our team is ready to help with listings, roommate matches, and any housing questions for students and owners.</p>
+          </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                <div className="flex items-center gap-3 font-semibold text-slate-900">
-                  <Phone className="h-5 w-5 text-indigo-600" /> Phone
-                </div>
-                <p className="mt-2 text-slate-600">+91 98765 43210</p>
-              </article>
-              <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                <div className="flex items-center gap-3 font-semibold text-slate-900">
-                  <Mail className="h-5 w-5 text-indigo-600" /> Email
-                </div>
-                <p className="mt-2 text-slate-600">support@homivo.com</p>
-              </article>
-              <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                <div className="flex items-center gap-3 font-semibold text-slate-900">
-                  <MapPin className="h-5 w-5 text-indigo-600" /> Office
-                </div>
-                <p className="mt-2 text-slate-600">123 Startup Hub, Scheme 54, Indore, MP</p>
-              </article>
-              <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                <div className="flex items-center gap-3 font-semibold text-slate-900">
-                  <Clock className="h-5 w-5 text-indigo-600" /> Hours
-                </div>
-                <p className="mt-2 text-slate-600">Mon - Sat, 9:00 AM - 7:00 PM</p>
-              </article>
-            </div>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl bg-indigo-50 p-5 border border-indigo-100">
-                <Users className="h-6 w-6 text-indigo-600" />
-                <p className="mt-3 text-sm font-semibold text-slate-900">Roommate help</p>
-                <p className="mt-1 text-sm text-slate-600">We can help you connect faster.</p>
+          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-slate-950/20 backdrop-blur">
+              <div className="rounded-[2rem] border border-white/10 bg-slate-950/90 p-6">
+                <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Support center</p>
+                <h2 className="mt-4 text-2xl font-semibold text-white">Fast answers and personal support</h2>
+                <p className="mt-4 text-slate-400">Reach out for help with property listings, roommate matching, or general Homivo questions. We’ll respond quickly with the next best step.</p>
               </div>
-              <div className="rounded-2xl bg-indigo-50 p-5 border border-indigo-100">
-                <Building className="h-6 w-6 text-indigo-600" />
-                <p className="mt-3 text-sm font-semibold text-slate-900">Property listing</p>
-                <p className="mt-1 text-sm text-slate-600">Support for owners and agents.</p>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <article className="rounded-3xl border border-white/10 bg-slate-900/80 p-6">
+                  <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Phone</p>
+                  <p className="mt-3 text-lg font-semibold text-white">+91 98765 43210</p>
+                </article>
+                <article className="rounded-3xl border border-white/10 bg-slate-900/80 p-6">
+                  <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Email</p>
+                  <p className="mt-3 text-lg font-semibold text-white">support@homivo.com</p>
+                </article>
+                <article className="rounded-3xl border border-white/10 bg-slate-900/80 p-6">
+                  <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Office</p>
+                  <p className="mt-3 text-lg font-semibold text-white">123 Startup Hub</p>
+                  <p className="mt-2 text-slate-400">Scheme 54, Indore, MP</p>
+                </article>
+                <article className="rounded-3xl border border-white/10 bg-slate-900/80 p-6">
+                  <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Hours</p>
+                  <p className="mt-3 text-lg font-semibold text-white">Mon - Sat</p>
+                  <p className="mt-2 text-slate-400">9:00 AM - 7:00 PM</p>
+                </article>
               </div>
-              <div className="rounded-2xl bg-indigo-50 p-5 border border-indigo-100">
-                <Bed className="h-6 w-6 text-indigo-600" />
-                <p className="mt-3 text-sm font-semibold text-slate-900">Accommodation search</p>
-                <p className="mt-1 text-sm text-slate-600">Find PGs, flats, and hostels.</p>
+
+              <div className="mt-8 rounded-[2rem] border border-white/10 bg-slate-900/80 p-6">
+                <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Why choose Homivo?</p>
+                <ul className="mt-4 space-y-3 text-slate-400">
+                  <li>• Verified listings with student-first support</li>
+                  <li>• Fast roommate matching and trusted owners</li>
+                  <li>• Clear pricing and easy booking flow</li>
+                </ul>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <section className="rounded-[2rem] bg-indigo-600 p-8 md:p-10 text-white shadow-sm">
-            <div className="flex items-center gap-3">
-              <MessageCircle className="h-6 w-6 text-indigo-200" />
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-indigo-200">Send a message</p>
-            </div>
-            <h2 className="mt-4 text-3xl font-bold">We’ll respond with the next best step</h2>
-            <p className="mt-3 text-indigo-100">
-              Tell us what you need and we’ll reply by email with the right guidance.
-            </p>
+            <section className="rounded-[2rem] border border-white/10 bg-slate-900/95 p-8 shadow-2xl shadow-slate-950/40">
+              <div className="rounded-[2rem] bg-slate-950/90 p-6 border border-white/10">
+                <div className="flex items-center gap-3">
+                  <MessageCircle className="h-6 w-6 text-sky-300" />
+                  <p className="text-sm uppercase tracking-[0.35em] text-slate-400">Send a request</p>
+                </div>
+                <h2 className="mt-4 text-3xl font-semibold text-white">We’ll respond with the next best step</h2>
+                <p className="mt-3 text-slate-400">Drop a message and our team will reach out with personalized help.</p>
+              </div>
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-              <label className="block">
-                <span className="text-sm font-semibold text-indigo-50">Your name</span>
-                <input
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder:text-indigo-100/70 outline-none focus:border-white/40"
-                  placeholder="Rahul Sharma"
-                  required
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-sm font-semibold text-indigo-50">Email</span>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder:text-indigo-100/70 outline-none focus:border-white/40"
-                  placeholder="rahul@example.com"
-                  required
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-sm font-semibold text-indigo-50">Subject</span>
-                <input
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder:text-indigo-100/70 outline-none focus:border-white/40"
-                  placeholder="Need help with a property listing"
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-sm font-semibold text-indigo-50">Message</span>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={5}
-                  className="mt-2 w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-white placeholder:text-indigo-100/70 outline-none focus:border-white/40 resize-none"
-                  placeholder="Tell us how we can help..."
-                  required
-                />
-              </label>
-
-              <button
-                type="submit"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 font-semibold text-indigo-700 transition hover:bg-indigo-50"
-              >
-                <Send className="h-4 w-4" />
-                Send Message
-              </button>
-            </form>
-          </section>
+              <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+                <label className="block">
+                  <span className="text-sm font-semibold text-slate-300">Your name</span>
+                  <input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    placeholder="Rahul Sharma"
+                    required
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-semibold text-slate-300">Email</span>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    placeholder="rahul@example.com"
+                    required
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-semibold text-slate-300">Subject</span>
+                  <input
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    placeholder="Need help with a property listing"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-sm font-semibold text-slate-300">Message</span>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    rows={6}
+                    className="mt-2 w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 resize-none"
+                    placeholder="Tell us how we can help..."
+                    required
+                  />
+                </label>
+                <button
+                  type="submit"
+                  className="w-full rounded-3xl bg-gradient-to-r from-indigo-600 to-sky-500 px-5 py-4 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:from-indigo-700 hover:to-sky-600"
+                >
+                  Send Message
+                </button>
+              </form>
+            </section>
+          </div>
         </div>
       </main>
 
-      <footer className="bg-gray-900 text-white py-12 border-t border-gray-800 mt-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center mb-4 text-white">
-              <HomeIcon className="w-6 h-6 mr-2 text-indigo-400" />
-              <span className="font-black text-2xl tracking-tight">
-                Homi<span className="text-indigo-400">vo</span>
-              </span>
+      <footer className="bg-slate-950 text-slate-300 py-16 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid gap-10 lg:grid-cols-4">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-gradient-to-r from-indigo-600 to-sky-500 text-white shadow-lg shadow-indigo-500/20">
+                <HomeIcon className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Homivo</p>
+                <p className="text-xl font-semibold text-white">Student Housing</p>
+              </div>
             </div>
-            <p className="text-gray-400 max-w-sm mb-6">
-              The ultimate platform connecting students with the best accommodations and compatible roommates across India.
+            <p className="max-w-sm text-slate-400">
+              Trusted student accommodation search with verified listings, roommate matching, and support for every move.
             </p>
-            <div className="flex space-x-4">
-              <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white cursor-pointer transition">
-                <span className="font-bold">f</span>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white cursor-pointer transition">
-                <span className="font-bold">X</span>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-indigo-600 hover:text-white cursor-pointer transition">
-                <span className="font-bold">in</span>
-              </div>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Explore</h4>
+            <ul className="mt-6 space-y-3 text-slate-400">
+              <li><Link href="/" className="hover:text-white transition">Home</Link></li>
+              <li><Link href="/#properties" className="hover:text-white transition">Browse Properties</Link></li>
+              <li><Link href="/#roommates" className="hover:text-white transition">Find Roommates</Link></li>
+              <li><Link href="/list-property" className="hover:text-white transition">List Property</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Get support</h4>
+            <ul className="mt-6 space-y-3 text-slate-400">
+              <li>Verified Listings</li>
+              <li>Quick Responses</li>
+              <li>Owner Support</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Contact</h4>
+            <div className="mt-6 space-y-4 text-slate-400">
+              <p className="flex items-start gap-3"><MapPin className="mt-1 h-5 w-5 text-indigo-400" /> 123 Startup Hub, Scheme 54, Indore, MP</p>
+              <p className="flex items-center gap-3"><Phone className="h-5 w-5 text-indigo-400" /> +91 98765 43210</p>
+              <p className="rounded-3xl bg-white/5 px-4 py-3 text-slate-300">support@homivo.com</p>
             </div>
-          </div>
-
-          <div>
-            <h4 className="text-lg font-bold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li><Link href="/" className="hover:text-indigo-400 transition">Home</Link></li>
-              <li><Link href="/#properties" className="hover:text-indigo-400 transition">Browse Properties</Link></li>
-              <li><Link href="/#roommates" className="hover:text-indigo-400 transition">Find Roommates</Link></li>
-              <li><Link href="/list-property" className="hover:text-indigo-400 transition">List Property</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-lg font-bold mb-4">Support</h4>
-            <ul className="space-y-3 text-gray-400">
-              <li className="flex items-start">
-                <MapPin className="w-5 h-5 mr-2 text-indigo-400 shrink-0 mt-0.5" />
-                <span>123 Startup Hub, Scheme 54, Indore, MP</span>
-              </li>
-              <li className="flex items-center">
-                <Phone className="w-5 h-5 mr-2 text-indigo-400 shrink-0" />
-                <span>+91 98765 43210</span>
-              </li>
-            </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
+        <div className="mt-16 border-t border-white/10 pt-8 text-center text-sm text-slate-500">
           &copy; {new Date().getFullYear()} Homivo. All rights reserved.
         </div>
       </footer>
