@@ -193,12 +193,9 @@ export default function App() {
     const fetchCities = async () => {
       try {
         const response = await fetch('/api/cities');
-        if (!response.ok) {
-          throw new Error(`City API returned ${response.status}`);
-        }
-
         const result = await response.json();
-        if (result?.success && Array.isArray(result.data)) {
+        
+        if (result?.data && Array.isArray(result.data)) {
           setCities(result.data.map((city) => ({
             id: city._id,
             name: city.name,
@@ -224,12 +221,9 @@ export default function App() {
     const fetchRoommates = async () => {
       try {
         const response = await fetch('/api/roommate');
-        if (!response.ok) {
-          throw new Error(`Roommate API returned ${response.status}`);
-        }
-
         const result = await response.json();
-        if (result?.success && Array.isArray(result.data)) {
+        
+        if (result?.data && Array.isArray(result.data)) {
           setRoommates(result.data.map((user) => ({
             id: user._id,
             name: user.name,
@@ -264,12 +258,9 @@ export default function App() {
         }
 
         const response = await fetch(`/api/properties${params.toString() ? `?${params.toString()}` : ''}`);
-        if (!response.ok) {
-          throw new Error(`Properties API returned ${response.status}`);
-        }
-
         const result = await response.json();
-        if (result?.success && Array.isArray(result.data)) {
+        
+        if (result?.data && Array.isArray(result.data)) {
           setProperties(result.data.map((prop) => ({
             id: prop._id,
             type: prop.type || 'PG',
@@ -433,7 +424,7 @@ export default function App() {
 
                   <button
                     onClick={handlePropertySearch}
-                    className="mt-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-sky-500 px-6 py-3 text-white font-semibold shadow-lg shadow-indigo-500/30 transition hover:from-indigo-700 hover:to-sky-600"
+                    className="mt-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-sky-500 px-6 py-3 text-white font-semibold shadow-lg shadow-indigo-500/30 transition hover:from-indigo-700 hover:to-sky-600 hover:shadow-indigo-500/50 hover:scale-105 active:scale-95 transform"
                   >
                     <Search className="w-4 h-4 inline mr-2" /> Search
                   </button>
@@ -450,9 +441,9 @@ export default function App() {
               { title: 'Verified Stays', subtitle: 'Trusted listings reviewed by our team.', icon: CheckCircle2 },
               { title: 'Fast Booking', subtitle: 'Reserve rooms and flats in moments.', icon: Clock },
               { title: 'Trusted Support', subtitle: 'Help whenever you need it.', icon: Phone }
-            ].map((card) => (
-              <div key={card.title} className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur">
-                <card.icon className="h-8 w-8 text-sky-400" />
+            ].map((card, idx) => (
+              <div key={card.title} className={`rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur card-hover animate-scale-in stagger-${idx + 1}`}>
+                <card.icon className="h-8 w-8 text-sky-400 animate-float" />
                 <h3 className="mt-6 text-xl font-bold text-white">{card.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-slate-400">{card.subtitle}</p>
               </div>
@@ -467,13 +458,13 @@ export default function App() {
               <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Explore</p>
               <h2 className="mt-3 text-3xl font-bold text-white">Top Student Cities</h2>
             </div>
-            <button onClick={() => navigate('properties')} className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700">
+            <button onClick={() => navigate('properties')} className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95">
               Browse All
             </button>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {topCities.map((city) => (
-              <div key={city.name} onClick={() => handleCityCardClick(city.name)} className="group relative overflow-hidden rounded-3xl shadow-lg cursor-pointer">
+            {topCities.map((city, idx) => (
+              <div key={city.name} onClick={() => handleCityCardClick(city.name)} className={`group relative overflow-hidden rounded-3xl shadow-lg cursor-pointer card-hover animate-scale-in stagger-${(idx % 6) + 1}`}>
                 <img src={city.image} alt={city.name} className="h-64 w-full object-cover transition duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -500,8 +491,8 @@ export default function App() {
                   No property found.
                 </div>
               ) : (
-                recentProperties.filter(p => p.type === 'PG').slice(0, 3).map(property => (
-                  <div key={property.id} onClick={() => handleViewDetails(property)} className="bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-indigo-500/50 shadow-lg hover:shadow-indigo-500/20 transition cursor-pointer group">
+                recentProperties.filter(p => p.type === 'PG').slice(0, 3).map((property, idx) => (
+                  <div key={property.id} onClick={() => handleViewDetails(property)} className={`bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-indigo-500/50 shadow-lg hover:shadow-indigo-500/30 transition cursor-pointer group card-hover animate-scale-in stagger-${idx + 1}`}>
                     <div className="relative h-48 overflow-hidden">
                       <PropertyImageFallback src={property.image} title={property.title} />
                       <div className="absolute top-4 left-4 bg-indigo-600 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
@@ -540,8 +531,8 @@ export default function App() {
                   No property found.
                 </div>
               ) : (
-                recentProperties.filter(p => p.type === 'Hostel').slice(0, 3).map(property => (
-                  <div key={property.id} onClick={() => handleViewDetails(property)} className="bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-indigo-500/50 shadow-lg hover:shadow-indigo-500/20 transition cursor-pointer group">
+                recentProperties.filter(p => p.type === 'Hostel').slice(0, 3).map((property, idx) => (
+                  <div key={property.id} onClick={() => handleViewDetails(property)} className={`bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-indigo-500/50 shadow-lg hover:shadow-indigo-500/30 transition cursor-pointer group card-hover animate-scale-in stagger-${idx + 1}`}>
                     <div className="relative h-48 overflow-hidden">
                       <PropertyImageFallback src={property.image} title={property.title} />
                       <div className="absolute top-4 left-4 bg-indigo-600 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
@@ -564,9 +555,29 @@ export default function App() {
                 ))
               )}
             </div>
-          </div>
+            </div>
 
-          {/* FEATURED ROOMMATES */}
+            {/* FULL-WIDTH ENQUIRY BANNER (below hostels) */}
+            <div className="w-full py-8">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-r from-slate-800 to-slate-700 p-6 flex items-center gap-6">
+                  <div className="flex-1 text-white">
+                    <h3 className="text-xl font-bold">Have a question? Enquire now</h3>
+                    <p className="mt-1 text-sm text-slate-300">Need help with listings, pricing, or features? Our team is here to help you quickly.</p>
+                  </div>
+                  <div className="flex-shrink-0 flex items-center gap-3">
+                    <a href="mailto:support@homivo.com?subject=General%20Enquiry" className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 transition">
+                      Enquire
+                    </a>
+                    <Link href="/contact-us" className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-slate-200 font-semibold hover:bg-white/10 transition">
+                      Contact Page
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* FEATURED ROOMMATES */}
           <div className="mb-16 animate-in fade-in slide-in-from-bottom-4 duration-300">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-8">
               <div>
@@ -580,8 +591,8 @@ export default function App() {
                   No roommate found.
                 </div>
               ) : (
-                roommates.slice(0, 3).map(roommate => (
-                  <div key={roommate.id} className="bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-sky-500/50 shadow-lg hover:shadow-sky-500/20 transition cursor-pointer group p-6">
+                roommates.slice(0, 3).map((roommate, idx) => (
+                  <div key={roommate.id} className={`bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-sky-500/50 shadow-lg hover:shadow-sky-500/30 transition cursor-pointer group p-6 card-hover animate-bounce-in stagger-${idx + 1}`}>
                     <div className="flex items-center gap-4 mb-4">
                       <AvatarFallback name={roommate.name} src={roommate.avatar} />
                       <div>
@@ -605,7 +616,7 @@ export default function App() {
                         </span>
                       ))}
                     </div>
-                    <button className="w-full bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                    <button className="w-full bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition hover:shadow-lg hover:shadow-sky-500/30 hover:scale-105 active:scale-95">
                       <Phone className="w-4 h-4 inline mr-2" /> Contact
                     </button>
                   </div>
@@ -621,7 +632,7 @@ export default function App() {
                 <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Latest Listings</p>
                 <h2 className="mt-3 text-3xl font-bold text-white">Recently Added Properties</h2>
               </div>
-              <button onClick={() => navigate('properties')} className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700">
+              <button onClick={() => navigate('properties')} className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95">
                 View All
               </button>
             </div>
@@ -631,8 +642,8 @@ export default function App() {
                   No property found.
                 </div>
               ) : (
-                recentProperties.map(property => (
-                  <div key={property.id} onClick={() => handleViewDetails(property)} className="bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-sky-500/50 shadow-lg hover:shadow-sky-500/20 transition cursor-pointer group">
+                recentProperties.map((property, idx) => (
+                  <div key={property.id} onClick={() => handleViewDetails(property)} className={`bg-slate-900/50 rounded-2xl overflow-hidden border border-white/10 hover:border-sky-500/50 shadow-lg hover:shadow-sky-500/30 transition cursor-pointer group card-hover animate-scale-in stagger-${idx + 1}`}>
                     <div className="relative h-48 overflow-hidden">
                       <PropertyImageFallback src={property.image} title={property.title} />
                       <div className="absolute top-4 left-4 bg-indigo-600 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm">
