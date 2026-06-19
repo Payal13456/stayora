@@ -13,7 +13,7 @@ const normalizeProperty = (property) => ({
   price: Number(property.price || 0),
   gender: property.genderPreference || property.gender || 'Any',
   owner: property.ownerName || property.owner?.name || property.owner || 'Not specified',
-  city: property.city?.name || '',
+  city: property.city?.name || property.city || '',
   image:
     Array.isArray(property.images) && property.images.length > 0
       ? property.images[0]
@@ -28,34 +28,35 @@ export default function AdminPropertyList() {
   const [apiError, setApiError] = useState('');
   const [properties, setProperties] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [appliedPropertyCityId, setAppliedPropertyCityId] = useState('');
 
   const fetchProperties = useCallback(async () => {
     try {
       setApiLoading(true);
       setApiError('');
 
-      const response = await fetch(`${PROPERTIES_API_URL}?_ts=${Date.now()}`, {
-        cache: 'no-store'
-      });
+      const params = new URLSearchParams();
+      if (appliedPropertyCityId.trim()) {
+        params.set('city', appliedPropertyCityId.trim());
+      }
 
+      const response = await fetch(`/api/properties${params.toString() ? `?${params.toString()}` : ''}`);
       if (!response.ok) {
-        throw new Error(`Properties API returned ${response.status}`);
+        throw new Error(`Failed to fetch properties: ${response.statusText}`);
       }
-
+      
       const result = await response.json();
-      if (!result?.success || !Array.isArray(result.data)) {
-        throw new Error(result?.message || 'Unable to load properties');
+      
+      if (result?.data && Array.isArray(result.data)) {
+        setProperties(result.data.map(normalizeProperty));
       }
-
-      setProperties(result.data.map(normalizeProperty));
     } catch (error) {
       console.error('Failed to load properties:', error);
-      setProperties([]);
-      setApiError('Unable to load properties from the backend right now.');
+      setApiError(error.message || 'Failed to sync listings from backend database.');
     } finally {
       setApiLoading(false);
     }
-  }, []);
+  }, [appliedPropertyCityId]);
 
   useEffect(() => {
     const auth = isAdminAuthenticated();
@@ -116,8 +117,8 @@ export default function AdminPropertyList() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <p className="text-slate-700">Checking admin access...</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <p className="text-slate-400">Checking admin access...</p>
       </div>
     );
   }
@@ -132,6 +133,7 @@ export default function AdminPropertyList() {
       onSignOut={handleSignOut}
     >
       <div className="flex flex-col gap-6">
+        {/* Stat Cards */}
         <div className="grid gap-4 md:grid-cols-4">
           {[
             { label: 'Total listings', value: propertyStats.total },
@@ -139,36 +141,37 @@ export default function AdminPropertyList() {
             { label: 'Flat listings', value: propertyStats.flats },
             { label: 'Avg. price', value: propertyStats.avgPrice ? `₹${propertyStats.avgPrice}` : 'N/A' }
           ].map((stat) => (
-            <div key={stat.label} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{stat.label}</p>
-              <p className="mt-3 text-2xl font-semibold text-slate-900">{stat.value}</p>
+            <div key={stat.label} className="rounded-3xl border border-white/10 bg-slate-900/50 p-5 shadow-lg backdrop-blur-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">{stat.label}</p>
+              <p className="mt-3 text-2xl font-semibold text-white">{stat.value}</p>
             </div>
           ))}
         </div>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        {/* Action Bar */}
+        <div className="rounded-3xl border border-white/10 bg-slate-900/50 p-5 shadow-lg backdrop-blur-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-slate-900">Properties</h2>
-              <p className="mt-1 text-sm text-slate-500">Loaded directly from the backend properties API.</p>
+              <h2 className="text-xl font-semibold text-white">Properties</h2>
+              <p className="mt-1 text-sm text-slate-400">Loaded directly from the backend properties API.</p>
             </div>
             <div className="flex flex-col gap-3 md:flex-row md:items-center">
               <input
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Search title, location, owner, or type"
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-indigo-500 md:w-80"
+                className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 md:w-80"
               />
               <button
                 type="button"
                 onClick={fetchProperties}
-                className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-slate-700 hover:text-white"
               >
                 Refresh
               </button>
               <Link
                 href="/admin/property/create"
-                className="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
+                className="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 shadow-lg shadow-indigo-600/20"
               >
                 Create property
               </Link>
@@ -177,42 +180,45 @@ export default function AdminPropertyList() {
         </div>
 
         {apiError ? (
-          <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
+          <div className="rounded-3xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm text-red-400">
             {apiError}
           </div>
         ) : null}
 
+        {/* Property Grid */}
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {apiLoading ? (
-            <div className="sm:col-span-2 xl:col-span-3 rounded-3xl border border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm">
+            <div className="sm:col-span-2 xl:col-span-3 rounded-3xl border border-white/10 bg-slate-900/50 p-10 text-center text-slate-400 shadow-lg">
               Loading properties from the backend...
             </div>
           ) : filteredProperties.length > 0 ? (
             filteredProperties.map((property) => (
-              <div key={property.id} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-                <div className="h-40 overflow-hidden bg-slate-100">
+              <div key={property.id} className="overflow-hidden rounded-3xl border border-white/10 bg-slate-900 shadow-xl transition-transform duration-200 hover:scale-[1.01]">
+                <div className="h-40 overflow-hidden bg-slate-950 relative">
                   <img
                     src={property.image}
                     alt={property.title}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover opacity-90"
                   />
                 </div>
                 <div className="space-y-4 p-5">
                   <div>
-                    <p className="text-lg font-semibold text-slate-900">{property.title}</p>
-                    <p className="mt-1 text-sm text-slate-600">{property.location}</p>
-                    <div className="mt-2 flex flex-wrap gap-2 text-sm text-slate-500">
-                      <span className="rounded-full bg-slate-100 px-3 py-1">{property.type}</span>
-                      <span className="rounded-full bg-slate-100 px-3 py-1">{property.gender}</span>
-                      <span className="rounded-full bg-slate-100 px-3 py-1">₹{property.price}</span>
+                    <p className="text-lg font-semibold text-white tracking-wide">{property.title}</p>
+                    <p className="mt-1 text-sm text-slate-400">{property.location}</p>
+                    <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium text-slate-300">
+                      <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1">{property.type}</span>
+                      <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1">{property.gender}</span>
+                      <span className="rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 px-3 py-1 font-semibold">₹{property.price}</span>
                     </div>
-                    <p className="mt-2 text-sm text-slate-700">Owner: {property.owner}</p>
-                    {property.city ? <p className="mt-1 text-sm text-slate-500">City: {property.city}</p> : null}
+                    <div className="mt-4 pt-3 border-t border-white/5 space-y-1 text-sm text-slate-400">
+                      <p><span className="text-slate-500">Owner:</span> {property.owner}</p>
+                      {property.city ? <p><span className="text-slate-500">City:</span> {property.city}</p> : null}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="pt-2">
                     <Link
                       href={`/property/${property.id}`}
-                      className="rounded-2xl border border-slate-300 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                      className="block text-center rounded-2xl border border-white/10 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-slate-700 hover:text-white"
                     >
                       Details
                     </Link>
@@ -221,9 +227,9 @@ export default function AdminPropertyList() {
               </div>
             ))
           ) : (
-            <div className="sm:col-span-2 xl:col-span-3 rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
-              <h3 className="text-lg font-semibold text-slate-900">No properties found</h3>
-              <p className="mt-2 text-sm text-slate-500">
+            <div className="sm:col-span-2 xl:col-span-3 rounded-3xl border border-dashed border-white/10 bg-slate-900/50 p-10 text-center">
+              <h3 className="text-lg font-semibold text-white">No properties found</h3>
+              <p className="mt-2 text-sm text-slate-400">
                 Try a different search or create a new property listing.
               </p>
               <Link

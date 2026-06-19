@@ -163,9 +163,8 @@ export default function AdminPropertyCreate() {
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
               >
                 <option>PG</option>
-                <option>Flat</option>
-                <option>Hostel</option>
-                <option>Shared Room</option>
+                <option>FLAT</option>
+                <option>HOSTEL</option>
               </select>
             </label>
 

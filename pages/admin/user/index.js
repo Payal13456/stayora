@@ -58,8 +58,8 @@ export default function AdminUserList() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-        <p className="text-slate-700">Checking admin access...</p>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <p className="text-slate-400">Checking admin access...</p>
       </div>
     );
   }
@@ -74,49 +74,54 @@ export default function AdminUserList() {
       onSignOut={handleSignOut}
     >
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        {/* Header Action Row */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">Users</h2>
-            <p className="mt-1 text-sm text-slate-500">View and manage all user accounts here.</p>
+            <h2 className="text-xl font-semibold text-white">Users</h2>
+            <p className="mt-1 text-sm text-slate-400">View and manage all user accounts here.</p>
           </div>
           <Link
             href="/admin/user/create"
-            className="inline-flex items-center rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition"
+            className="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition shadow-lg shadow-indigo-600/20"
           >
             Create user
           </Link>
         </div>
 
+        {/* Users Card Grid */}
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {users.map((user) => (
-            <div key={user.id} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div key={user.id} className="rounded-3xl border border-white/10 bg-slate-900/50 p-5 shadow-lg backdrop-blur-sm">
               {editingId === user.id ? (
+                /* Edit State Form */
                 <div className="space-y-4">
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="flex flex-col gap-3">
                     <input
                       name="name"
                       value={editForm.name}
                       onChange={handleChange}
-                      className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
+                      placeholder="Name"
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                     />
                     <input
                       name="email"
                       value={editForm.email}
                       onChange={handleChange}
-                      className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
+                      placeholder="Email Address"
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                     />
                     <select
                       name="role"
                       value={editForm.role}
                       onChange={handleChange}
-                      className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-indigo-500 focus:ring-indigo-500"
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                     >
-                      <option>Owner</option>
-                      <option>Tenant</option>
-                      <option>Agent</option>
+                      <option className="bg-slate-900">Owner</option>
+                      <option className="bg-slate-900">Tenant</option>
+                      <option className="bg-slate-900">Agent</option>
                     </select>
                   </div>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-3 pt-2">
                     <button
                       onClick={handleSave}
                       className="rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition"
@@ -125,29 +130,32 @@ export default function AdminUserList() {
                     </button>
                     <button
                       onClick={handleCancel}
-                      className="rounded-2xl border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 transition"
+                      className="rounded-2xl border border-white/10 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition"
                     >
                       Cancel
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+                /* View State Card */
+                <div className="flex flex-col justify-between h-full gap-4">
                   <div>
-                    <p className="text-lg font-semibold text-slate-900">{user.name}</p>
-                    <p className="mt-1 text-sm text-slate-600">{user.email}</p>
-                    <p className="mt-2 text-sm uppercase tracking-[0.2em] text-slate-500">{user.role}</p>
+                    <p className="text-lg font-semibold text-white tracking-wide">{user.name}</p>
+                    <p className="mt-1 text-sm text-slate-400 truncate">{user.email}</p>
+                    <span className="mt-3 inline-flex rounded-full bg-white/5 border border-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                      {user.role}
+                    </span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
                     <button
                       onClick={() => handleEditClick(user)}
-                      className="rounded-2xl border border-indigo-600 bg-indigo-50 px-4 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 transition"
+                      className="flex-1 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300 transition"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(user.id)}
-                      className="rounded-2xl border border-red-600 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 transition"
+                      className="flex-1 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-400 hover:bg-red-500/20 hover:text-red-300 transition"
                     >
                       Delete
                     </button>
