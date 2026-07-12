@@ -1,96 +1,7 @@
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Home as HomeIcon, PlusCircle, MapPin, Phone } from 'lucide-react';
 
-const INITIAL_FORM = {
-  title: '',
-  type: 'PG',
-  city: '',
-  address: '',
-  price: '',
-  genderPreference: 'Any',
-  description: '',
-  amenities: '',
-  images: '',
-  videos: '',
-  ownerName: '',
-  ownerPhone: ''
-};
-
 export default function ListPropertyPage() {
-  const [formData, setFormData] = useState(INITIAL_FORM);
-  const [cities, setCities] = useState([]);
-  const [cityLoading, setCityLoading] = useState(true);
-  const [submissionState, setSubmissionState] = useState('idle');
-
-  useEffect(() => {
-    const loadCities = async () => {
-      try {
-        const response = await fetch('/api/cities');
-        if (!response.ok) throw new Error(`Failed to load cities: ${response.status}`);
-
-        const result = await response.json();
-        if (result?.success && Array.isArray(result.data)) {
-          setCities(result.data);
-        }
-      } catch (error) {
-        console.error('Error loading cities:', error);
-      } finally {
-        setCityLoading(false);
-      }
-    };
-
-    loadCities();
-  }, []);
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setSubmissionState('loading');
-
-    const payload = {
-      title: formData.title,
-      type: formData.type,
-      city: formData.city || null,
-      address: formData.address,
-      price: parseInt(formData.price, 10),
-      genderPreference: formData.genderPreference,
-      description: formData.description,
-      amenities: formData.amenities
-        .split(',')
-        .map((amenity) => amenity.trim())
-        .filter(Boolean),
-      images: formData.images ? [formData.images] : [],
-      videos: formData.videos ? [formData.videos] : [],
-      ownerName: formData.ownerName,
-      ownerPhone: formData.ownerPhone
-    };
-
-    try {
-      const response = await fetch('/api/properties/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add property');
-      }
-
-      setSubmissionState('success');
-      setFormData(INITIAL_FORM);
-    } catch (error) {
-      console.error('Error submitting property:', error);
-      setSubmissionState('error');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -165,202 +76,36 @@ export default function ListPropertyPage() {
                 <div className="flex items-center gap-3">
                   <PlusCircle className="h-6 w-6 text-sky-300" />
                   <div>
-                    <p className="text-sm uppercase tracking-[0.35em] text-slate-400">Get started</p>
-                    <h2 className="mt-3 text-2xl font-semibold text-white">Create your listing</h2>
+                    <p className="text-sm uppercase tracking-[0.35em] text-slate-400">Owner access</p>
+                    <h2 className="mt-3 text-2xl font-semibold text-white">Login or register to continue</h2>
                   </div>
                 </div>
-                <p className="mt-4 text-slate-400">Fill in the details below and publish a standout property listing for students to discover.</p>
+                <p className="mt-4 text-slate-400">Use your owner account to publish listings, manage properties, and receive visiting requests.</p>
               </div>
 
-              {submissionState === 'success' ? (
-                <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-emerald-900">
-                  <h2 className="text-2xl font-semibold mb-2">Listing submitted!</h2>
-                  <p className="mb-4">Your property has been successfully added to the platform.</p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {submissionState === 'error' && (
-                    <div className="rounded-3xl border border-rose-200 bg-rose-50 p-4 text-rose-800">
-                      There was an error submitting your property. Please try again.
-                    </div>
-                  )}
-
-                  <div className="grid gap-6 lg:grid-cols-2">
-                    <label className="space-y-2 text-sm font-medium text-slate-300">
-                      Property title *
-                      <input
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                        placeholder="Sunshine Girls PG"
-                        required
-                      />
-                    </label>
-
-                    <label className="space-y-2 text-sm font-medium text-slate-300">
-                      Property type *
-                      <select
-                        name="type"
-                        value={formData.type}
-                        onChange={handleChange}
-                        className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                      >
-                        <option value="PG">PG</option>
-                        <option value="HOSTEL">Hostel</option>
-                        <option value="FLAT">Flat</option>
-                      </select>
-                    </label>
-                  </div>
-
-                  <div className="grid gap-6 lg:grid-cols-2">
-                    <label className="space-y-2 text-sm font-medium text-slate-300">
-                      City *
-                      <select
-                        required
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                        className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                      >
-                        <option value="" disabled>
-                          {cityLoading ? 'Loading cities...' : 'Select a city'}
-                        </option>
-                        {cities.map((city) => (
-                          <option key={city._id} value={city._id}>
-                            {city.name}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label className="space-y-2 text-sm font-medium text-slate-300">
-                      Address *
-                      <input
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                        placeholder="Vijay Nagar, Indore"
-                        required
-                      />
-                    </label>
-                  </div>
-
-                  <div className="grid gap-6 lg:grid-cols-2">
-                    <label className="space-y-2 text-sm font-medium text-slate-300">
-                      Monthly rent (₹) *
-                      <input
-                        name="price"
-                        type="number"
-                        value={formData.price}
-                        onChange={handleChange}
-                        className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                        placeholder="6500"
-                        required
-                      />
-                    </label>
-
-                    <label className="space-y-2 text-sm font-medium text-slate-300">
-                      Gender preference
-                      <select
-                        name="genderPreference"
-                        value={formData.genderPreference}
-                        onChange={handleChange}
-                        className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                      >
-                        <option value="Any">Any / Co-ed</option>
-                        <option value="Male">Male Only</option>
-                        <option value="Female">Female Only</option>
-                      </select>
-                    </label>
-                  </div>
-
-                  <label className="space-y-2 text-sm font-medium text-slate-300">
-                    Description
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleChange}
-                      rows={4}
-                      className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                      placeholder="Describe the property, rules, and highlights..."
-                    />
-                  </label>
-
-                  <div className="grid gap-6 lg:grid-cols-2">
-                    <label className="space-y-2 text-sm font-medium text-slate-300">
-                      Image URL
-                      <input
-                        name="images"
-                        type="url"
-                        value={formData.images}
-                        onChange={handleChange}
-                        className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                        placeholder="https://example.com/image.jpg"
-                      />
-                    </label>
-
-                    <label className="space-y-2 text-sm font-medium text-slate-300">
-                      Video URL
-                      <input
-                        name="videos"
-                        type="url"
-                        value={formData.videos}
-                        onChange={handleChange}
-                        className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                        placeholder="https://youtube.com/..."
-                      />
-                    </label>
-                  </div>
-
-                  <label className="space-y-2 text-sm font-medium text-slate-300">
-                    Amenities (comma separated)
-                    <input
-                      name="amenities"
-                      value={formData.amenities}
-                      onChange={handleChange}
-                      className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                      placeholder="WiFi, Food Included, AC, Laundry"
-                    />
-                  </label>
-
-                  <div className="grid gap-6 lg:grid-cols-2">
-                    <label className="space-y-2 text-sm font-medium text-slate-300">
-                      Owner name *
-                      <input
-                        name="ownerName"
-                        value={formData.ownerName}
-                        onChange={handleChange}
-                        className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                        placeholder="Rahul Sharma"
-                        required
-                      />
-                    </label>
-
-                    <label className="space-y-2 text-sm font-medium text-slate-300">
-                      Owner phone *
-                      <input
-                        name="ownerPhone"
-                        type="tel"
-                        value={formData.ownerPhone}
-                        onChange={handleChange}
-                        className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-                        placeholder="9876543210"
-                        required
-                      />
-                    </label>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={submissionState === 'loading'}
-                    className="w-full rounded-3xl bg-gradient-to-r from-indigo-600 to-sky-500 px-5 py-4 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:from-indigo-700 hover:to-sky-600 disabled:cursor-not-allowed disabled:opacity-60"
+              <div className="space-y-6">
+                <div className="rounded-3xl border border-white/10 bg-slate-950/90 p-6">
+                  <h3 className="text-lg font-semibold text-white">Already an owner?</h3>
+                  <p className="mt-2 text-slate-400">Sign in to access your dashboard and manage your listings.</p>
+                  <a
+                    href="/owner/login"
+                    className="mt-5 inline-flex w-full items-center justify-center rounded-3xl bg-indigo-600 px-6 py-4 text-sm font-semibold text-white hover:bg-indigo-700 transition"
                   >
-                    {submissionState === 'loading' ? 'Publishing...' : 'Publish Listing'}
-                  </button>
-                </form>
-              )}
+                    Owner Login
+                  </a>
+                </div>
+
+                <div className="rounded-3xl border border-white/10 bg-slate-950/90 p-6">
+                  <h3 className="text-lg font-semibold text-white">New owner?</h3>
+                  <p className="mt-2 text-slate-400">Create an account and start listing properties for students.</p>
+                  <a
+                    href="/owner/register"
+                    className="mt-5 inline-flex w-full items-center justify-center rounded-3xl border border-indigo-600 bg-slate-900 px-6 py-4 text-sm font-semibold text-indigo-100 hover:bg-indigo-700 transition"
+                  >
+                    Register as Owner
+                  </a>
+                </div>
+              </div>
             </section>
           </div>
         </div>

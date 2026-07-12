@@ -72,7 +72,10 @@ const mockProperties = [
 
 export default async function handler(req, res) {
   try {
-    const response = await fetch(PROPERTIES_API_URL, {
+    const queryString = new URLSearchParams(req.query).toString();
+    const requestUrl = queryString ? `${PROPERTIES_API_URL}?${queryString}` : PROPERTIES_API_URL;
+
+    const response = await fetch(requestUrl, {
       timeout: 5000
     });
 
@@ -116,12 +119,14 @@ function filterProperties(properties, queryParams) {
     genderPreference,
     minPrice,
     maxPrice,
+    user_id,
   } = queryParams || {};
 
   const normalize = (value) => String(value || '').trim().toLowerCase();
   const cityFilter = String(city || '').trim();
   const typeFilter = normalize(type);
   const genderFilter = normalize(genderPreference);
+  const ownerIdFilter = String(user_id || '').trim();
   const minPriceNumber = minPrice === undefined || minPrice === '' ? null : Number(minPrice);
   const maxPriceNumber = maxPrice === undefined || maxPrice === '' ? null : Number(maxPrice);
 
@@ -132,14 +137,16 @@ function filterProperties(properties, queryParams) {
     const propertyType = normalize(property?.type);
     const propertyGender = normalize(property?.genderPreference);
     const propertyPrice = Number(property?.price);
+    const propertyOwnerId = String(property?.user_id || property?.owner_id || property?._id || property?.ownerId || property?.owner?.id || '').trim();
 
     const matchesCity = !cityFilter || propertyCityId === cityFilter || propertyCity.includes(normalize(cityFilter)) || propertyAddress.includes(normalize(cityFilter));
     const matchesType = !typeFilter || propertyType === typeFilter;
     const matchesGender = !genderFilter || propertyGender === genderFilter;
+    const matchesOwner = !ownerIdFilter || propertyOwnerId === ownerIdFilter;
     const matchesMinPrice = minPriceNumber === null || Number.isNaN(minPriceNumber) || propertyPrice >= minPriceNumber;
     const matchesMaxPrice = maxPriceNumber === null || Number.isNaN(maxPriceNumber) || propertyPrice <= maxPriceNumber;
 
-    return matchesCity && matchesType && matchesGender && matchesMinPrice && matchesMaxPrice;
+    return matchesCity && matchesType && matchesGender && matchesOwner && matchesMinPrice && matchesMaxPrice;
   });
 
   return filtered;
