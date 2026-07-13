@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import OwnerLayout from '../../../components/OwnerLayout';
 import { getOwnerSession, isOwnerAuthenticated } from '../../../lib/ownerAuth';
 
 const PROPERTY_STORAGE_KEY = 'stayora-owner-properties';
@@ -174,14 +175,19 @@ export default function OwnerPropertyCreate() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-8 rounded-3xl border border-white/10 bg-slate-900/70 p-8 shadow-xl">
-          <h1 className="text-3xl font-semibold text-white">Create property listing</h1>
-          <p className="mt-2 text-slate-400">Publish a new property to your owner dashboard and make it visible to students.</p>
-        </div>
+    <OwnerLayout
+      title="Create Listing"
+      subtitle="Add a new property to your owner dashboard"
+      active="property"
+    >
+      <div className="min-h-screen bg-slate-950 text-slate-100">
+        <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="mb-8 rounded-3xl border border-white/10 bg-slate-900/70 p-8 shadow-xl">
+            <h1 className="text-3xl font-semibold text-white">Create property listing</h1>
+            <p className="mt-2 text-slate-400">Publish a new property to your owner dashboard and make it visible to students.</p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-white/10 bg-slate-900/80 p-8 shadow-xl">
+          <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-white/10 bg-slate-900/80 p-8 shadow-xl">
           {error ? <p className="text-sm text-rose-400">{error}</p> : null}
           {success ? <p className="text-sm text-emerald-400">{success}</p> : null}
 
@@ -363,5 +369,6 @@ export default function OwnerPropertyCreate() {
         </form>
       </div>
     </div>
+  </OwnerLayout>
   );
 }

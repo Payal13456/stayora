@@ -66,32 +66,44 @@ export default function AdminUserList() {
 
   if (!authenticated) return null;
 
+  const roleQuery = router.query.role ? String(router.query.role).toLowerCase() : '';
+  const filteredUsers = roleQuery
+    ? users.filter((user) => String(user.role || '').toLowerCase() === roleQuery)
+    : users;
+
+  const pageTitle = roleQuery === 'student' ? 'Manage Students' : roleQuery === 'owner' ? 'Manage Owners' : 'User List';
+  const pageSubtitle = roleQuery
+    ? `Browse, edit, or remove ${roleQuery === 'student' ? 'student' : 'owner'} accounts`
+    : 'Browse, edit, or remove accounts';
+  const activeTab = roleQuery === 'student' ? 'students' : roleQuery === 'owner' ? 'owners' : 'user';
+
   return (
     <AdminLayout
-      title="User List"
-      subtitle="Browse, edit, or remove accounts"
-      active="user"
+      title={pageTitle}
+      subtitle={pageSubtitle}
+      active={activeTab}
       onSignOut={handleSignOut}
     >
-      <div className="flex flex-col gap-6">
-        {/* Header Action Row */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-white">Users</h2>
-            <p className="mt-1 text-sm text-slate-400">View and manage all user accounts here.</p>
+      <div className="space-y-6">
+        <div className="rounded-3xl border border-slate-800 bg-slate-950/95 p-5 shadow-xl shadow-slate-950/20">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.35em] text-sky-300">{pageTitle}</p>
+              <h2 className="mt-2 text-3xl font-semibold text-white">{pageTitle}</h2>
+              <p className="mt-2 text-sm text-slate-400">{pageSubtitle}</p>
+            </div>
+            <Link
+              href="/admin/user/create"
+              className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-500 to-indigo-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 transition hover:from-violet-400 hover:to-indigo-400"
+            >
+              Create user
+            </Link>
           </div>
-          <Link
-            href="/admin/user/create"
-            className="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition shadow-lg shadow-indigo-600/20"
-          >
-            Create user
-          </Link>
         </div>
 
-        {/* Users Card Grid */}
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {users.map((user) => (
-            <div key={user.id} className="rounded-3xl border border-white/10 bg-slate-900/50 p-5 shadow-lg backdrop-blur-sm">
+        <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
+          {filteredUsers.map((user) => (
+            <div key={user.id} className="rounded-3xl border border-slate-800 bg-slate-900/95 p-5 shadow-xl shadow-slate-950/20">
               {editingId === user.id ? (
                 /* Edit State Form */
                 <div className="space-y-4">
