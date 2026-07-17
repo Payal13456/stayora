@@ -12,4 +12,4 @@ Initial Next.js setup for the Homivo project.
    ```bash
    npm run dev
    ```
-3. Open https://api.myhomivo.com/
+3. Open https://api.myhomivo.com

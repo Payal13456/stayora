@@ -54,7 +54,7 @@ const mockRoommates = [
 
 export default async function handler(req, res) {
   try {
-    const response = await fetch("https://api.myhomivo.com//roommate", {
+    const response = await fetch("https://api.myhomivo.com/roommate", {
       timeout: 5000,
     });
 

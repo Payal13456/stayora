@@ -46,7 +46,7 @@ const mockCities = [
 
 export default async function handler(req, res) {
   try {
-    const response = await fetch("https://api.myhomivo.com//cities", {
+    const response = await fetch("https://api.myhomivo.com/cities", {
       timeout: 5000,
     });
 

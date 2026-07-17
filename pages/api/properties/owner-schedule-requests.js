@@ -1,7 +1,7 @@
 const SCHEDULE_LIST_URL =
-  "https://api.myhomivo.com//properties/owner-schedule-requests";
+  "https://api.myhomivo.com/properties/owner-schedule-requests";
 const SCHEDULE_ACTION_URL =
-  "https://api.myhomivo.com//properties/schedule-requests";
+  "https://api.myhomivo.com/properties/schedule-requests";
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
@@ -22,23 +22,19 @@ export default async function handler(req, res) {
 
       const data = await response.json();
       if (!response.ok) {
-        return res
-          .status(response.status)
-          .json({
-            success: false,
-            message: data?.message || "Failed to fetch schedule requests",
-          });
+        return res.status(response.status).json({
+          success: false,
+          message: data?.message || "Failed to fetch schedule requests",
+        });
       }
 
       return res.status(200).json(data);
     } catch (error) {
       console.error("Error proxying schedule requests GET:", error);
-      return res
-        .status(500)
-        .json({
-          success: false,
-          message: "Unable to fetch schedule requests.",
-        });
+      return res.status(500).json({
+        success: false,
+        message: "Unable to fetch schedule requests.",
+      });
     }
   }
 
@@ -52,12 +48,10 @@ export default async function handler(req, res) {
 
     const { requestId, action } = req.body || {};
     if (!requestId || !["accept", "reject"].includes(action)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "requestId and valid action are required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "requestId and valid action are required",
+      });
     }
 
     try {
@@ -74,23 +68,19 @@ export default async function handler(req, res) {
 
       const data = await response.json();
       if (!response.ok) {
-        return res
-          .status(response.status)
-          .json({
-            success: false,
-            message: data?.message || "Failed to update schedule request",
-          });
+        return res.status(response.status).json({
+          success: false,
+          message: data?.message || "Failed to update schedule request",
+        });
       }
 
       return res.status(200).json(data);
     } catch (error) {
       console.error("Error proxying schedule request POST:", error);
-      return res
-        .status(500)
-        .json({
-          success: false,
-          message: "Unable to update schedule request.",
-        });
+      return res.status(500).json({
+        success: false,
+        message: "Unable to update schedule request.",
+      });
     }
   }
 

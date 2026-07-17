@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch("https://api.myhomivo.com//properties/add", {
+    const response = await fetch("https://api.myhomivo.com/properties/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -16,12 +16,10 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const error = await response.json();
-      return res
-        .status(response.status)
-        .json({
-          success: false,
-          message: error.message || "Failed to add property",
-        });
+      return res.status(response.status).json({
+        success: false,
+        message: error.message || "Failed to add property",
+      });
     }
 
     const data = await response.json();
