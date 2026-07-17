@@ -12,4 +12,4 @@ Initial Next.js setup for the Homivo project.
    ```bash
    npm run dev
    ```
-3. Open https://stayora-backend.onrender.com
+3. Open https://api.myhomivo.com/
