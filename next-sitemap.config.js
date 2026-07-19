@@ -16,28 +16,28 @@ module.exports = {
 
     // Fetch properties
     const propertyRes = await fetch(
-      "https://myhomivo.com/api/properties"
+      "https://api.myhomivo.com/properties"
     );
 
     const properties = await propertyRes.json();
 
     properties.forEach((property) => {
       paths.push({
-        loc: `/property/${property.slug}`,
+        loc: `/property/${property._id}`,
         lastmod: new Date().toISOString(),
       });
     });
 
     // Fetch cities
     const cityRes = await fetch(
-      "https://myhomivo.com/api/cities"
+      "https://api.myhomivo.com/cities"
     );
 
     const cities = await cityRes.json();
 
     cities.forEach((city) => {
       paths.push({
-        loc: `/city/${city.slug}`,
+        loc: `/city/${city._id}`,
         lastmod: new Date().toISOString(),
       });
     });
