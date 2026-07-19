@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<url><loc>https://myhomivo.com</loc><lastmod>2026-07-19T07:36:50.451Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/admin</loc><lastmod>2026-07-19T07:36:50.453Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/admin/dashboard</loc><lastmod>2026-07-19T07:36:50.453Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/admin/property</loc><lastmod>2026-07-19T07:36:50.453Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/admin/property/create</loc><lastmod>2026-07-19T07:36:50.453Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/admin/settings</loc><lastmod>2026-07-19T07:36:50.453Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/admin/user</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/admin/user/create</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/contact-us</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/list-property</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/owner/dashboard</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/owner/login</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/owner/notifications</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/owner/property</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/owner/property/create</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/owner/register</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/owner/schedule</loc><lastmod>2026-07-19T07:36:50.454Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://myhomivo.com/property/6a537a255c6eb90700bcdb5f</loc><lastmod>2026-07-19T07:36:50.994Z</lastmod></url>
+<url><loc>https://myhomivo.com/city/6a1be090cf2347e3e34c7559</loc><lastmod>2026-07-19T07:36:51.051Z</lastmod></url>
+<url><loc>https://myhomivo.com/city/6a1be12ecf2347e3e34c755c</loc><lastmod>2026-07-19T07:36:51.051Z</lastmod></url>
+<url><loc>https://myhomivo.com/city/6a1be191cf2347e3e34c755f</loc><lastmod>2026-07-19T07:36:51.051Z</lastmod></url>
+<url><loc>https://myhomivo.com/city/6a1be34ecf2347e3e34c7563</loc><lastmod>2026-07-19T07:36:51.051Z</lastmod></url>
+</urlset>

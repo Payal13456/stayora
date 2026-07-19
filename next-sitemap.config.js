@@ -21,7 +21,7 @@ module.exports = {
 
     const properties = await propertyRes.json();
 
-    properties.forEach((property) => {
+    properties.data.forEach((property) => {
       paths.push({
         loc: `/property/${property._id}`,
         lastmod: new Date().toISOString(),
@@ -35,7 +35,7 @@ module.exports = {
 
     const cities = await cityRes.json();
 
-    cities.forEach((city) => {
+    cities.data.forEach((city) => {
       paths.push({
         loc: `/city/${city._id}`,
         lastmod: new Date().toISOString(),

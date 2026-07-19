@@ -1,5 +1,9 @@
+# *
 User-agent: *
-
 Allow: /
 
+# Host
+Host: https://myhomivo.com
+
+# Sitemaps
 Sitemap: https://myhomivo.com/sitemap.xml
