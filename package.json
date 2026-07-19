@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/third-parties": "^16.2.10",
     "fetch": "^1.1.0",
     "lucide-react": "^0.481.0",
     "next": "^15.4.0",
