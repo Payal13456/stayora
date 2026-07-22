@@ -36,8 +36,9 @@ module.exports = {
     const cities = await cityRes.json();
 
     cities.data.forEach((city) => {
+      const slug = city.slug || city._id;
       paths.push({
-        loc: `/city/${city._id}`,
+        loc: `/city/${slug}`,
         lastmod: new Date().toISOString(),
       });
     });

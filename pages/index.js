@@ -199,10 +199,13 @@ export default function App() {
           setCities(result.data.map((city) => ({
             id: city._id,
             name: city.name,
+            slug: city.slug || String(city._id).trim(),
             image: city.image || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=800'
           })));
           setTopCities(result.data.map((city) => ({
+            id: city._id,
             name: city.name,
+            slug: city.slug || String(city._id).trim(),
             image: city.image || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=800',
             count: city.count || 'Popular'
           })));
@@ -304,13 +307,6 @@ export default function App() {
 
   const handlePropertySearch = () => {
     setAppliedPropertyCityId(propertySearchCityId.trim());
-    setPropertySearchCityId('');
-    navigate('properties', { clearFilters: false });
-  };
-
-  const handleCityCardClick = (cityName) => {
-    const selectedCity = cities.find((item) => item.name === cityName);
-    setAppliedPropertyCityId(selectedCity?.id || '');
     setPropertySearchCityId('');
     navigate('properties', { clearFilters: false });
   };
@@ -458,20 +454,20 @@ export default function App() {
               <p className="text-sm uppercase tracking-[0.35em] text-sky-300">Explore</p>
               <h2 className="mt-3 text-3xl font-bold text-white">Top Student Cities</h2>
             </div>
-            <button onClick={() => navigate('properties')} className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95">
+            <Link href="/city" className="inline-flex items-center justify-center rounded-full bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-700 hover:shadow-indigo-500/40 hover:scale-105 active:scale-95">
               Browse All
-            </button>
+            </Link>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {topCities.map((city, idx) => (
-              <div key={city.name} onClick={() => handleCityCardClick(city.name)} className={`group relative overflow-hidden rounded-3xl shadow-lg cursor-pointer card-hover animate-scale-in stagger-${(idx % 6) + 1}`}>
+              <Link key={city.name} href={`/city/${city.slug}`} className={`group relative overflow-hidden rounded-3xl shadow-lg cursor-pointer card-hover animate-scale-in stagger-${(idx % 6) + 1}`}>
                 <img src={city.image} alt={city.name} className="h-64 w-full object-cover transition duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <p className="text-sm text-slate-300">{city.count} Listings</p>
                   <h3 className="mt-2 text-xl font-semibold text-white">{city.name}</h3>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
